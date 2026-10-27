@@ -23,3 +23,27 @@ function csvCell(v){return '"'+String(v??'').replaceAll('"','""')+'"'}
 $('export').addEventListener('click',()=>{const rows=[['Fecha y hora','Código','Estudiante','Curso','Módulo','Tipo','Observación'],...records.filter(r=>r.module===current).map(r=>{const s=students.find(x=>x.id===r.studentId);return [new Date(r.at).toLocaleString('es-CL'),r.studentId,s?.name||'',s?.course||'',r.module,r.type,r.reason]})];const csv='\uFEFF'+rows.map(row=>row.map(csvCell).join(';')).join('\r\n');const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='luf-'+current+'-'+dateKey(new Date())+'.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)});
 $('reset').addEventListener('click',()=>{if(!confirm('¿Eliminar todos los movimientos ficticios guardados en este navegador?'))return;records=[];localStorage.removeItem(key);$('feedback').textContent='Datos de prueba restablecidos.';render()});
 function tick(){$('clock').textContent=new Date().toLocaleString('es-CL',{dateStyle:'full',timeStyle:'short'})}tick();setInterval(tick,30000);render();
+// USB scanners operating as keyboards typically append Enter after the code.
+const scanInput=$('scan-input');
+$('scan-focus').addEventListener('click',()=>scanInput.focus());
+scanInput.addEventListener('keydown',event=>{
+ if(event.key!=='Enter')return;
+ event.preventDefault();
+ const code=scanInput.value.trim().toUpperCase();
+ scanInput.value='';
+ const student=students.find(s=>s.id.toUpperCase()===code);
+ const feedback=$('feedback');feedback.className='';
+ if(!student){feedback.textContent='Código no reconocido. Prueba LUF-001, LUF-002, LUF-003 o LUF-004.';feedback.className='error';scanInput.focus();return}
+ choose(student);
+ // Do not bypass fields or authorization checks in withdrawal/pass modules.
+ if(current==='atrasos'||current==='almuerzo'){
+   if($('exceptional').checked||$('reason').value.trim()){
+     feedback.textContent='Estudiante identificado. Confirma el registro con el botón del formulario.';
+   }else{
+     $('movement-form').requestSubmit();
+   }
+ }else{
+   feedback.textContent='Estudiante identificado por QR. Completa los datos y confirma manualmente el movimiento.';
+ }
+ scanInput.focus();
+});
