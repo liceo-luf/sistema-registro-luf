@@ -62,3 +62,5 @@ footer{color:#71869c}.tag{font-size:11px}
 .tardy-pass-actions{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin:12px 0 18px;padding:12px;background:#edf6ff;border:1px solid #c9e0f6;border-radius:12px}.tardy-pass-actions[hidden]{display:none}.tardy-pass-actions small{color:#597a9b}
 
 .tardy-pass-actions label{display:flex;flex-direction:column;gap:5px;flex:1;min-width:175px}.tardy-pass-actions select,.tardy-pass-actions input{background:#fff;color:#193e66;border:1px solid #c6d9ee;border-radius:9px;padding:10px;width:100%}.tardy-pass-actions button{align-self:end}
+
+.pass-quick-types{display:flex;flex-wrap:wrap;gap:8px;flex:1 1 100%}.pass-quick-types button{flex:1;min-width:125px;padding:13px 10px;font-weight:700}.pass-quick-types .pass-type-active{background:#1e5b99;color:#fff;border-color:#1e5b99}
