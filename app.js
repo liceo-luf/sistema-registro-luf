@@ -35,7 +35,12 @@ function showScan(message,status,student){
  recentScans.unshift({message,at:new Date(),student:student?.name||''});recentScans.length=Math.min(recentScans.length,5);
  const list=$('scan-recent');list.replaceChildren();for(const item of recentScans){const li=el('li',item.message);li.append(el('small',item.at.toLocaleTimeString('es-CL')));list.append(li)}
 }
-function focusScanner(){scanInput.focus()}
+function focusScanner(){if(document.visibilityState==='visible')scanInput.focus({preventScroll:true})}
+function isEditingField(target){return target instanceof HTMLElement&&(target.matches('input:not(#scan-input), textarea, select, [contenteditable="true"]')||Boolean(target.closest('[contenteditable="true"]')))}
+// Recover focus after ordinary clicks, but never interrupt manual editing.
+document.addEventListener('click',event=>{if(!isEditingField(event.target))setTimeout(focusScanner,0)});
+window.addEventListener('focus',()=>setTimeout(focusScanner,0));
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(focusScanner,0)});
 $('scan-focus').addEventListener('click',focusScanner);
 scanInput.addEventListener('keydown',event=>{
  if(event.key!=='Enter')return;
@@ -54,6 +59,8 @@ scanInput.addEventListener('keydown',event=>{
    $('feedback').textContent='Completa los datos y confirma manualmente el movimiento.';
  }
  focusScanner();
+ // Some USB readers or browsers move focus after Enter; restore it after that event finishes.
+ setTimeout(focusScanner,0);
 });
 // Start ready for the first scan. Scanning keeps focus on the same field.
 focusScanner();
