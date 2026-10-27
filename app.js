@@ -28,6 +28,8 @@ function tick(){$('clock').textContent=new Date().toLocaleString('es-CL',{dateSt
 // USB scanners operating as keyboards typically append Enter after the code.
 const scanInput=$('scan-input');
 const recentScans=[];
+let identityTimer;
+function showIdentity(student,message,status){const card=$('scan-identity');clearTimeout(identityTimer);card.hidden=false;card.className='scan-identity '+(status||'');$('scan-avatar').textContent=student?student.name.trim().split(/\s+/).slice(0,2).map(x=>x[0]).join('').toUpperCase():'?';$('scan-person-name').textContent=student?.name||'Código no reconocido';$('scan-person-course').textContent=student?.course||'Revisa la credencial';$('scan-person-result').textContent=message;identityTimer=setTimeout(()=>{card.hidden=true},3000)}
 function showScan(message,status,student){
  const box=$('scan-status');box.textContent=message;box.className='scan-status'+(status==='error'?' error':status==='warning'?' warning':'');
  recentScans.unshift({message,at:new Date(),student:student?.name||''});recentScans.length=Math.min(recentScans.length,5);
@@ -40,15 +42,15 @@ scanInput.addEventListener('keydown',event=>{
  event.preventDefault();
  const code=scanInput.value.trim().toUpperCase();scanInput.value='';
  const student=students.find(s=>s.active!==false&&s.id.toUpperCase()===code);
- if(!student){showScan('Código no reconocido: '+(code||'(vacío)'),'error');focusScanner();return}
+ if(!student){showScan('Código no reconocido: '+(code||'(vacío)'),'error');showIdentity(null,'Código no reconocido','error');focusScanner();return}
  choose(student);
  if((current==='atrasos'||current==='almuerzo')&&!$('exceptional').checked&&!$('reason').value.trim()){
    const before=records.length;
    $('movement-form').requestSubmit();
-   if(records.length>before){showScan('✓ '+student.name+' · '+student.course+' · registro exitoso','success',student)}
-   else{showScan('Atención: '+student.name+' · '+$('feedback').textContent,'warning',student)}
+   if(records.length>before){showScan('✓ '+student.name+' · '+student.course+' · registro exitoso','success',student);showIdentity(student,'✓ Movimiento registrado','success')}
+   else{showScan('Atención: '+student.name+' · '+$('feedback').textContent,'warning',student);showIdentity(student,$('feedback').textContent,'warning')}
  }else{
-   showScan('Identificado: '+student.name+' · '+student.course+' · requiere confirmación manual','warning',student);
+   showScan('Identificado: '+student.name+' · '+student.course+' · requiere confirmación manual','warning',student);showIdentity(student,'Pendiente de confirmación manual','warning');
    $('feedback').textContent='Completa los datos y confirma manualmente el movimiento.';
  }
  focusScanner();
