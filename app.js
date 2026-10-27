@@ -19,7 +19,42 @@ loadTardySettings();
 $('tardy-save').addEventListener('click',()=>{const next={start:$('tardy-start').value,exception:$('tardy-exception-time').value,tolerance:Number($('tardy-tolerance').value),alert:Number($('tardy-alert-count').value)};if(!/^\d\d:\d\d$/.test(next.start)||!/^\d\d:\d\d$/.test(next.exception)||next.exception<=next.start||!Number.isInteger(next.tolerance)||next.tolerance<0||next.tolerance>60||!Number.isInteger(next.alert)||next.alert<1||next.alert>30){$('tardy-config-feedback').textContent='Revisa los horarios y los valores.';return}try{localStorage.setItem(tardyKey,JSON.stringify(next));tardySettings=next;$('tardy-config-feedback').textContent='Configuración de prueba guardada.';updateTardySummary();refreshTardyPass()}catch{$('tardy-config-feedback').textContent='No se pudo guardar la configuración.'}});
 
 function refreshTardyPass(){const area=$('tardy-pass-actions');if(!area)return;const last=selected&&records.filter(r=>r.module==='atrasos'&&r.studentId===selected.id&&dateKey(new Date(r.at))===dateKey(new Date())).at(-1);area.hidden=current!=='atrasos'||!last;area.dataset.recordId=last?.id||'';if(last){$('tardy-pass-type').value=last.passType||'Atraso habitual';$('tardy-pass-note').value=last.passNote||'';syncPassButtons()}}
-function printTardyPass(){const record=records.find(r=>r.id===$('tardy-pass-actions').dataset.recordId);const student=record&&students.find(s=>s.id===record.studentId);if(!record||!student)return;record.passType=$('tardy-pass-type').value;record.passNote=$('tardy-pass-note').value.trim();if(!persist()){alert('No se pudo guardar el tipo de pase.');return}const popup=window.open('','_blank','width=480,height=680');if(!popup){alert('Permite las ventanas emergentes para imprimir el pase.');return}const safe=value=>String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));const stamp=new Date(record.at);popup.document.open();popup.document.write('<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Pase de ingreso LUF</title><style>@page{size:A6;margin:12mm}body{font-family:Arial,sans-serif;color:#173c6c;margin:18px;font-size:13px}.pass{border:2px solid #205b9a;border-radius:12px;padding:18px}h1{font-size:15px;margin:0 0 5px}h2{font-size:17px;margin:14px 0;border-bottom:1px solid #aac4de;padding-bottom:8px}p{margin:10px 0;line-height:1.5}.signature{margin-top:55px;text-align:center;border-top:1px solid #345;width:75%;padding-top:8px}@media print{body{margin:0}.pass{break-inside:avoid}}</style></head><body><div class="pass"><h1>LICEO LUIS URBINA FLORES</h1><small>Inspectoría General</small><h2>PASE DE INGRESO A CLASES</h2><p><b>Estudiante:</b> '+safe(student.name)+'</p><p><b>Curso:</b> '+safe(student.course)+'</p><p><b>Fecha:</b> '+safe(stamp.toLocaleDateString('es-CL'))+'</p><p><b>Hora registrada:</b> '+safe(stamp.toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit'}))+'</p><p><b>Motivo:</b> Atraso registrado</p><p>Se solicita permitir el ingreso del estudiante a la sala de clases.</p><div class="signature">Firma / timbre de Inspectoría General</div></div></body></html>');popup.document.close();popup.focus();popup.print()}
+function printTardyPass(){
+ const record=records.find(r=>r.id===$('tardy-pass-actions').dataset.recordId);
+ const student=record&&students.find(s=>s.id===record.studentId);
+ if(!record||!student)return;
+ const popup=window.open('','_blank','width=480,height=680');
+ if(!popup){alert('Permite las ventanas emergentes para imprimir el pase.');return}
+ record.passType=$('tardy-pass-type').value;
+ record.passNote=$('tardy-pass-note').value.trim();
+ if(!persist()){popup.close();alert('No se pudo guardar el tipo de pase.');return}
+ const safe=value=>String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+ const stamp=new Date(record.at);
+ const justified=record.passType==='Justificación del apoderado';
+ const subtitle=justified?'INGRESO JUSTIFICADO':record.passType==='Ingreso con pase'?'INGRESO CON PASE':'ATRASO REGISTRADO';
+ const explanation=justified?'Se autoriza el ingreso del estudiante a clases, habiéndose registrado la justificación correspondiente en Inspectoría General.':record.passType==='Ingreso con pase'?'Se autoriza el ingreso del estudiante a clases mediante pase emitido por Inspectoría General.':'Se solicita permitir el ingreso del estudiante a clases, habiéndose registrado su atraso.';
+ const html=`<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Pase de ingreso LUF</title><style>
+ @page{size:A6;margin:10mm}*{box-sizing:border-box}body{font:12px Arial,sans-serif;color:#173e70;margin:0;background:#fff}
+ .pass{border:1.5px solid #24578f;border-radius:9px;padding:14px;break-inside:avoid}.brand{display:flex;align-items:center;gap:9px;border-bottom:2px solid #24578f;padding-bottom:11px}
+ .mark{background:#173e70;color:white;font-size:12px;font-weight:bold;padding:11px 7px;border-radius:6px}.school{font-weight:bold;font-size:12px}.office{font-size:9px;color:#657b91;margin-top:3px}
+ h1{font-size:14px;text-align:center;margin:17px 0 5px}.status{text-align:center;font-weight:bold;color:#197b55;font-size:10px;margin-bottom:18px}
+ .field{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid #e2e9f0;padding:8px 0}.field span:first-child{color:#667c92}.field strong{text-align:right;overflow-wrap:anywhere}
+ .notice{margin-top:16px;background:#f1f5fa;border-radius:6px;padding:11px;text-align:center;line-height:1.5}
+ .signature{margin:52px auto 8px;text-align:center;border-top:1px solid #667c92;width:78%;padding-top:7px;font-size:10px}
+ .foot{text-align:center;color:#8493a4;font-size:9px;border-top:1px solid #e2e9f0;padding-top:10px}
+ @media screen{body{max-width:430px;margin:20px auto;padding:12px}}@media print{.pass{border-color:#24578f}}
+ </style></head><body><article class="pass"><header class="brand"><div class="mark">LUF</div><div><div class="school">LICEO LUIS URBINA FLORES</div><div class="office">INSPECTORÍA GENERAL · RENGO</div></div></header>
+ <h1>PASE DE INGRESO A CLASES</h1><div class="status">${safe(subtitle)}</div>
+ <div class="field"><span>Estudiante</span><strong>${safe(student.name)}</strong></div>
+ <div class="field"><span>Curso</span><strong>${safe(student.course)}</strong></div>
+ <div class="field"><span>Fecha</span><strong>${safe(stamp.toLocaleDateString('es-CL'))}</strong></div>
+ <div class="field"><span>Hora de ingreso</span><strong>${safe(stamp.toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit'}))} hrs.</strong></div>
+ <div class="field"><span>Motivo</span><strong>${safe(record.passType)}</strong></div>
+ ${record.passNote?'<div class="field"><span>Observación</span><strong>'+safe(record.passNote)+'</strong></div>':''}
+ <div class="notice">${safe(explanation)}</div><div class="signature">Firma / Timbre Inspectoría General</div>
+ <div class="foot">Documento de control interno</div></article></body></html>`;
+ popup.document.open();popup.document.write(html);popup.document.close();popup.focus();popup.print();
+}
 function syncPassButtons(){document.querySelectorAll('.pass-type-btn').forEach(button=>{const active=button.dataset.passType===$('tardy-pass-type').value;button.setAttribute('aria-pressed',String(active));button.classList.toggle('pass-type-active',active)})}
 document.querySelectorAll('.pass-type-btn').forEach(button=>button.addEventListener('click',()=>{$('tardy-pass-type').value=button.dataset.passType;syncPassButtons();printTardyPass()}));
 $('print-tardy-pass').addEventListener('click',printTardyPass);
