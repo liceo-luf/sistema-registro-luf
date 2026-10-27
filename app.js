@@ -78,12 +78,12 @@ function todayRecords(){const day=dateKey(new Date());return records.filter(r=>d
 function renderStats(){const today=todayRecords();const values=[['Movimientos hoy',today.length],['Atrasos hoy',today.filter(r=>r.module==='atrasos'&&r.passType!=='Ingreso con pase'&&r.passType!=='Justificación del apoderado').length],['Retiros hoy',today.filter(r=>r.module==='retiros'||r.module==='temprano').length],['Almuerzos hoy',today.filter(r=>r.module==='almuerzo').length]];$('stats').replaceChildren(...values.map(([label,value])=>{const card=el('div',undefined,'stat');card.append(el('small',label),el('strong',String(value)));return card}))}
 function renderModules(){$('modules').replaceChildren(...modules.map(([id,title,desc])=>{const btn=el('button',title,'module theme-'+id+(id===current?' active':''));btn.type='button';btn.append(el('span',desc));btn.addEventListener('click',()=>{current=id;selected=null;$('student-search').value='';$('reason').value='';$('exceptional').checked=false;$('selected').hidden=true;$('matches').replaceChildren();$('feedback').textContent='';render()});return btn}))}
 function renderHistory(){const body=$('history');body.replaceChildren();const rows=records.filter(r=>r.module===current).slice().reverse().slice(0,20);if(!rows.length){const tr=el('tr');const td=el('td','Sin movimientos registrados en este módulo.');td.colSpan=5;tr.append(td);body.append(tr);return}for(const r of rows){const tr=el('tr');const s=students.find(x=>x.id===r.studentId);const values=[new Date(r.at).toLocaleString('es-CL'),s?s.name:'Desconocido',modules.find(m=>m[0]===r.module)?.[1]||r.module,r.type,r.reason||'—'];tr.append(...values.map(v=>el('td',v)));body.append(tr)}}
-function render(){document.body.className='theme-'+current;renderModules();const m=modules.find(x=>x[0]===current);$('module-title').textContent=m[1];$('module-desc').textContent=m[2];renderStats();renderHistory();$('tardy-counter').hidden=current!=='atrasos';updateTardySummary()}
-function search(){const q=$('student-search').value.trim().toLocaleLowerCase('es-CL');selected=null;$('selected').hidden=true;const list=$('matches');list.replaceChildren();if(q.length<2)return;const hits=students.filter(s=>s.active!==false).filter(s=>[s.name,s.rut,s.id,s.course].some(v=>v.toLocaleLowerCase('es-CL').includes(q))).slice(0,6);for(const s of hits){const b=el('button',s.name+' · '+s.course+' · '+s.id,'match');b.type='button';b.addEventListener('click',()=>choose(s));list.append(b)}}
+function render(){document.body.className='theme-'+current;scanInput.disabled=current==='retiros';scanInput.placeholder=current==='retiros'?'QR desactivado en Retiros':'Escanea aquí: LUF-001';$('student-search').placeholder=current==='retiros'?'Ingrese RUT del estudiante (obligatorio)':'Buscar estudiante por nombre, RUT o código QR';renderModules();const m=modules.find(x=>x[0]===current);$('module-title').textContent=m[1];$('module-desc').textContent=m[2];renderStats();renderHistory();$('tardy-counter').hidden=current!=='atrasos';updateTardySummary()}
+function search(){const q=$('student-search').value.trim().toLocaleLowerCase('es-CL');selected=null;$('selected').hidden=true;const list=$('matches');list.replaceChildren();if(q.length<2)return;const hits=students.filter(s=>s.active!==false).filter(s=>current==='retiros'?s.rut.toLocaleLowerCase('es-CL').replace(/[^0-9k]/g,'').includes(q.replace(/[^0-9k]/g,'')):[s.name,s.rut,s.id,s.course].some(v=>v.toLocaleLowerCase('es-CL').includes(q))).slice(0,6);for(const s of hits){const b=el('button',s.name+' · '+s.course+' · '+s.id,'match');b.type='button';b.addEventListener('click',()=>{choose(s);if(current==='retiros')attentionOpen(s,'RUT ingresado por funcionario. Verifica los datos del estudiante.')});list.append(b)}}
 function choose(s){selected=s;updateTardySummary();refreshTardyPass();$('student-search').value=s.name;$('selected').textContent=s.name+' · '+s.course+' · '+s.rut;$('selected').hidden=false;$('matches').replaceChildren()}
 $('student-search').addEventListener('input',search);
-$('student-search').addEventListener('keydown',e=>{if(e.key!=='Enter')return;e.preventDefault();const q=$('student-search').value.trim().toLowerCase();const exact=students.find(s=>s.id.toLowerCase()===q||s.rut.toLowerCase()===q);const first=$('matches').querySelector('button');if(exact){choose(exact);attentionOpen(exact,'Estudiante seleccionado manualmente.')}else if(first)first.click()});
-$('movement-form').addEventListener('submit',e=>{e.preventDefault();const feedback=$('feedback');feedback.className='';if(!selected||selected.active===false){feedback.textContent='Selecciona un estudiante activo de la lista.';feedback.className='error';return}const exceptional=$('exceptional').checked,reason=$('reason').value.trim();if(exceptional&&!reason){feedback.textContent='Indica el motivo del registro excepcional.';feedback.className='error';return}const today=todayRecords();if(current==='almuerzo'&&today.some(r=>r.module==='almuerzo'&&r.studentId===selected.id)){feedback.textContent='Este estudiante ya tiene un almuerzo registrado hoy.';feedback.className='error';return}let type=exceptional?'Excepcional':'Normal';
+$('student-search').addEventListener('keydown',e=>{if(e.key!=='Enter')return;e.preventDefault();const q=$('student-search').value.trim().toLowerCase();const exact=students.find(s=>s.active!==false&&(current==='retiros'?s.rut.toLowerCase().replace(/[^0-9k]/g,'')===q.replace(/[^0-9k]/g,''):s.id.toLowerCase()===q||s.rut.toLowerCase()===q));const first=$('matches').querySelector('button');if(exact){choose(exact);attentionOpen(exact,'Estudiante seleccionado manualmente.')}else if(first)first.click()});
+$('movement-form').addEventListener('submit',e=>{e.preventDefault();const feedback=$('feedback');feedback.className='';if(!selected||selected.active===false){feedback.textContent='Selecciona un estudiante activo de la lista.';feedback.className='error';return}if(current==='retiros'&&!$('reason').value.includes('RUT:')){feedback.textContent='El retiro requiere identificar al adulto y verificar su autorización en la pantalla de atención.';feedback.className='error';return}const exceptional=$('exceptional').checked,reason=$('reason').value.trim();if(exceptional&&!reason){feedback.textContent='Indica el motivo del registro excepcional.';feedback.className='error';return}const today=todayRecords();if(current==='almuerzo'&&today.some(r=>r.module==='almuerzo'&&r.studentId===selected.id)){feedback.textContent='Este estudiante ya tiene un almuerzo registrado hoy.';feedback.className='error';return}let type=exceptional?'Excepcional':'Normal';
 if(current==='atrasos'){
  const now=new Date(),minutes=now.getHours()*60+now.getMinutes();
  const previous=today.find(r=>r.module==='atrasos'&&r.studentId===selected.id);if(previous){feedback.textContent='Estudiante con atraso registrado hoy a las '+new Date(previous.at).toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit'})+'. No se genera otro registro.';feedback.className='error';return}
@@ -113,6 +113,8 @@ function attentionOpen(student,message){
  $('attention-feedback').textContent='';
  $('attention-adult').hidden=true;
  $('attention-adult-name').value='';
+ $('attention-adult-rut').value='';
+ $('attention-verified').checked=false;
  $('attention-confirm').hidden=true;
  attentionPending=false;attentionAction='';
  const area=$('attention-actions');area.replaceChildren();
@@ -143,8 +145,10 @@ $('attention-confirm').addEventListener('click',()=>{
  if(!selected||!attentionAction)return;
  if(current==='retiros'||current==='temprano'){
   const adult=$('attention-adult-name').value.trim();
-  if(!adult){$('attention-feedback').textContent='Indica el nombre del adulto que retira y verifica su autorización.';return}
-  $('reason').value='Adulto que retira ('+attentionAction+'): '+adult;
+  const adultRut=$('attention-adult-rut').value.trim();
+  if(!adult||!adultRut){$('attention-feedback').textContent='Ingresa nombre y RUT del adulto que retira.';return}
+  if(!$('attention-verified').checked){$('attention-feedback').textContent='Debes confirmar que verificaste la identidad y autorización del adulto.';return}
+  $('reason').value='Adulto que retira ('+attentionAction+'): '+adult+' · RUT: '+adultRut;
  }else if(current==='ingreso'){$('reason').value=attentionAction}
  const before=records.length;
  $('movement-form').requestSubmit();
@@ -158,7 +162,7 @@ function showScan(message,status,student){
  recentScans.unshift({message,at:new Date(),student:student?.name||''});recentScans.length=Math.min(recentScans.length,5);
  const list=$('scan-recent');list.replaceChildren();for(const item of recentScans){const li=el('li',item.message);li.append(el('small',item.at.toLocaleTimeString('es-CL')));list.append(li)}
 }
-function focusScanner(){if(document.visibilityState==='visible')scanInput.focus({preventScroll:true})}
+function focusScanner(){if(document.visibilityState==='visible'&&current!=='retiros')scanInput.focus({preventScroll:true})}
 function isEditingField(target){return target instanceof HTMLElement&&(target.matches('input:not(#scan-input), textarea, select, [contenteditable="true"]')||Boolean(target.closest('[contenteditable="true"]')))}
 // Recover focus after ordinary clicks, but never interrupt manual editing.
 document.addEventListener('click',event=>{if(!isEditingField(event.target))setTimeout(focusScanner,0)});
@@ -169,6 +173,7 @@ scanInput.addEventListener('keydown',event=>{
  if(event.key!=='Enter')return;
  event.preventDefault();
  const code=scanInput.value.trim().toUpperCase();scanInput.value='';
+ if(current==='retiros'){showScan('En Retiros ingresa manualmente el RUT del estudiante. El QR está desactivado.','warning');return}
  const student=students.find(s=>s.active!==false&&s.id.toUpperCase()===code);
  if(!student){showScan('Código no reconocido: '+(code||'(vacío)'),'error');showIdentity(null,'Código no reconocido','error');focusScanner();return}
  if(attentionPending&&!window.confirm('Hay un movimiento pendiente. ¿Descartarlo para atender al siguiente estudiante?')){focusScanner();return}
