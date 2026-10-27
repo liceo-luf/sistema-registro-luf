@@ -8,7 +8,7 @@ const $=id=>document.getElementById(id);
 try{const saved=JSON.parse(localStorage.getItem(rosterKey)||'null');if(Array.isArray(saved))students=saved}catch{}
 let current='atrasos',selected=null,records=load();
 const tardyKey='sistema-registro-luf-tardy-settings-v1';
-const tardyDefaults={start:'08:10',tolerance:0,exception:'09:30',alert:3};
+const tardyDefaults={start:'08:10',tolerance:10,exception:'08:30',alert:3};
 let tardySettings={...tardyDefaults};
 try{const stored=JSON.parse(localStorage.getItem(tardyKey)||'null');if(stored&&typeof stored==='object')tardySettings={...tardyDefaults,...stored}}catch{}
 function minuteOf(time){const [h,m]=time.split(':').map(Number);return h*60+m}
@@ -35,8 +35,8 @@ $('movement-form').addEventListener('submit',e=>{e.preventDefault();const feedba
 if(current==='atrasos'){
  const now=new Date(),minutes=now.getHours()*60+now.getMinutes();
  const previous=today.find(r=>r.module==='atrasos'&&r.studentId===selected.id);if(previous){feedback.textContent='Estudiante con atraso registrado hoy a las '+new Date(previous.at).toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit'})+'. No se genera otro registro.';feedback.className='error';return}
- if(minutes<minuteOf(tardySettings.start)+tardySettings.tolerance){feedback.textContent='Todavía está dentro del horario permitido. No se registra atraso.';feedback.className='error';return}
- const needsExceptional=minutes>=minuteOf(tardySettings.exception);
+ if(minutes<=minuteOf(tardySettings.start)+(selected.tardyException?20:tardySettings.tolerance)){feedback.textContent='Todavía está dentro del horario permitido. No se registra atraso.';feedback.className='error';return}
+ const needsExceptional=false;
  if(needsExceptional&&!exceptional){feedback.textContent='Fuera del horario normal: marca Registro excepcional e indica el motivo.';feedback.className='error';return}
  if(needsExceptional&&!reason){feedback.textContent='El atraso excepcional requiere motivo.';feedback.className='error';return}
 }
@@ -70,7 +70,7 @@ scanInput.addEventListener('keydown',event=>{
  if(!student){showScan('Código no reconocido: '+(code||'(vacío)'),'error');showIdentity(null,'Código no reconocido','error');focusScanner();return}
  choose(student);
  if(current==='atrasos'){const previous=todayRecords().find(r=>r.module==='atrasos'&&r.studentId===student.id);if(previous){const msg='Estudiante con atraso registrado hoy a las '+new Date(previous.at).toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit'})+'. No se genera otro registro.';showScan(msg,'warning',student);showIdentity(student,msg,'warning');$('feedback').textContent=msg;focusScanner();setTimeout(focusScanner,0);return}}
- if((current==='atrasos'||current==='almuerzo')&&!$('exceptional').checked&&!$('reason').value.trim()&&(current!=='atrasos'||(new Date().getHours()*60+new Date().getMinutes()<minuteOf(tardySettings.exception)))){
+ if((current==='atrasos'||current==='almuerzo')&&!$('exceptional').checked&&!$('reason').value.trim()){
    const before=records.length;
    $('movement-form').requestSubmit();
    if(records.length>before){showScan('✓ '+student.name+' · '+student.course+' · registro exitoso','success',student);showIdentity(student,'✓ Movimiento registrado','success')}
