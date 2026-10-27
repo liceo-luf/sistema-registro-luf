@@ -33,26 +33,22 @@ function printTardyPass(){
  const justified=record.passType==='Justificación del apoderado';
  const subtitle=justified?'INGRESO JUSTIFICADO':record.passType==='Ingreso con pase'?'INGRESO CON PASE':'ATRASO REGISTRADO';
  const explanation=justified?'Se autoriza el ingreso del estudiante a clases, habiéndose registrado la justificación correspondiente en Inspectoría General.':record.passType==='Ingreso con pase'?'Se autoriza el ingreso del estudiante a clases mediante pase emitido por Inspectoría General.':'Se solicita permitir el ingreso del estudiante a clases, habiéndose registrado su atraso.';
- const html=`<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Pase de ingreso LUF</title><style>
- @page{size:A6;margin:10mm}*{box-sizing:border-box}body{font:12px Arial,sans-serif;color:#173e70;margin:0;background:#fff}
- .pass{border:1.5px solid #24578f;border-radius:9px;padding:14px;break-inside:avoid}.brand{display:flex;align-items:center;gap:9px;border-bottom:2px solid #24578f;padding-bottom:11px}
- .mark{background:#173e70;color:white;font-size:12px;font-weight:bold;padding:11px 7px;border-radius:6px}.school{font-weight:bold;font-size:12px}.office{font-size:9px;color:#657b91;margin-top:3px}
- h1{font-size:14px;text-align:center;margin:17px 0 5px}.status{text-align:center;font-weight:bold;color:#197b55;font-size:10px;margin-bottom:18px}
- .field{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid #e2e9f0;padding:8px 0}.field span:first-child{color:#667c92}.field strong{text-align:right;overflow-wrap:anywhere}
- .notice{margin-top:16px;background:#f1f5fa;border-radius:6px;padding:11px;text-align:center;line-height:1.5}
- .signature{margin:52px auto 8px;text-align:center;border-top:1px solid #667c92;width:78%;padding-top:7px;font-size:10px}
- .foot{text-align:center;color:#8493a4;font-size:9px;border-top:1px solid #e2e9f0;padding-top:10px}
- @media screen{body{max-width:430px;margin:20px auto;padding:12px}}@media print{.pass{border-color:#24578f}}
- </style></head><body><article class="pass"><header class="brand"><div class="mark">LUF</div><div><div class="school">LICEO LUIS URBINA FLORES</div><div class="office">INSPECTORÍA GENERAL · RENGO</div></div></header>
- <h1>PASE DE INGRESO A CLASES</h1><div class="status">${safe(subtitle)}</div>
- <div class="field"><span>Estudiante</span><strong>${safe(student.name)}</strong></div>
- <div class="field"><span>Curso</span><strong>${safe(student.course)}</strong></div>
- <div class="field"><span>Fecha</span><strong>${safe(stamp.toLocaleDateString('es-CL'))}</strong></div>
- <div class="field"><span>Hora de ingreso</span><strong>${safe(stamp.toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit'}))} hrs.</strong></div>
- <div class="field"><span>Motivo</span><strong>${safe(record.passType)}</strong></div>
- ${record.passNote?'<div class="field"><span>Observación</span><strong>'+safe(record.passNote)+'</strong></div>':''}
- <div class="notice">${safe(explanation)}</div><div class="signature">Firma / Timbre Inspectoría General</div>
- <div class="foot">Documento de control interno</div></article></body></html>`;
+ const html=`<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Ticket de ingreso LUF</title><style>
+ @page{size:58mm 85mm;margin:2mm}*{box-sizing:border-box}html,body{margin:0;padding:0;background:#fff;color:#000;font:10px Arial,sans-serif}
+ .ticket{width:54mm;max-width:100%;padding:2mm 1mm;overflow-wrap:anywhere}.center{text-align:center}.school{font-size:10px;font-weight:800}.small{font-size:9px}
+ h1{font-size:12px;margin:7px 0 3px}.status{font-size:10px;font-weight:800;margin:3px 0 8px}
+ .rule{border-top:1px dashed #111;margin:6px 0}.line{margin:4px 0;line-height:1.3}
+ .signature{margin-top:18px;text-align:center;font-size:9px}.signature:before{content:"________________________";display:block;margin-bottom:4px}
+ @media screen{body{padding:18px}.ticket{margin:auto;border:1px solid #ddd}}
+ </style></head><body><article class="ticket"><div class="center school">LICEO LUIS URBINA FLORES</div><div class="center small">INSPECTORÍA GENERAL</div><div class="rule"></div>
+ <h1 class="center">PASE DE INGRESO</h1><div class="center status">${safe(subtitle)}</div>
+ <div class="line"><b>Estudiante:</b> ${safe(student.name)}</div>
+ <div class="line"><b>Curso:</b> ${safe(student.course)}</div>
+ <div class="line"><b>Fecha:</b> ${safe(stamp.toLocaleDateString('es-CL'))}</div>
+ <div class="line"><b>Hora:</b> ${safe(stamp.toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit'}))}</div>
+ ${record.passNote?'<div class="line"><b>Observación:</b> '+safe(record.passNote)+'</div>':''}
+ <div class="rule"></div><div class="center small">Se autoriza el ingreso a clases.</div>
+ <div class="signature">Inspectoría General</div></article></body></html>`;
  popup.document.open();popup.document.write(html);popup.document.close();popup.focus();popup.print();
 }
 function syncPassButtons(){document.querySelectorAll('.pass-type-btn').forEach(button=>{const active=button.dataset.passType===$('tardy-pass-type').value;button.setAttribute('aria-pressed',String(active));button.classList.toggle('pass-type-active',active)})}
