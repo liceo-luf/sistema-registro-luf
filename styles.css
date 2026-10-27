@@ -64,3 +64,27 @@ footer{color:#71869c}.tag{font-size:11px}
 .tardy-pass-actions label{display:flex;flex-direction:column;gap:5px;flex:1;min-width:175px}.tardy-pass-actions select,.tardy-pass-actions input{background:#fff;color:#193e66;border:1px solid #c6d9ee;border-radius:9px;padding:10px;width:100%}.tardy-pass-actions button{align-self:end}
 
 .pass-quick-types{display:flex;flex-wrap:wrap;gap:8px;flex:1 1 100%}.pass-quick-types button{flex:1;min-width:125px;padding:13px 10px;font-weight:700}.pass-quick-types .pass-type-active{background:#1e5b99;color:#fff;border-color:#1e5b99}
+
+/* Fullscreen QR attention screen */
+.attention-overlay[hidden],#attention-adult[hidden],#attention-confirm[hidden]{display:none!important}
+.attention-overlay{position:fixed;inset:0;z-index:10000;background:rgba(5,22,43,.88);display:flex;align-items:center;justify-content:center;padding:18px;overflow:auto}
+.attention-panel{background:#fff;color:#14365b;border-radius:22px;width:min(690px,100%);box-shadow:0 25px 90px #0007;overflow:hidden;max-height:96vh;overflow-y:auto}
+.attention-head{display:flex;justify-content:space-between;align-items:center;background:#123b69;color:#fff;padding:17px 22px;font-size:14px;letter-spacing:.04em}
+.attention-head button{background:#ffffff22;color:#fff;border:1px solid #ffffff55;border-radius:10px;padding:7px 12px;font-size:20px;cursor:pointer}
+.attention-body{text-align:center;padding:24px 25px 28px}
+.attention-status{display:inline-block;color:#16805d;background:#e6f7ed;padding:8px 14px;border-radius:99px;font-size:12px;font-weight:800}
+.attention-avatar{width:100px;height:100px;border-radius:50%;background:#dceaf8;color:#174b7e;display:grid;place-items:center;font-size:35px;font-weight:850;margin:17px auto}
+#attention-name{font-size:clamp(30px,5vw,48px);line-height:1.12;margin:0 0 8px;text-transform:uppercase;color:#102f53}
+.attention-course{font-size:clamp(21px,3vw,29px);font-weight:800;color:#34699e}
+#attention-message{font-size:15px;color:#506b85;margin:12px 0}
+.attention-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:24px 0 14px}
+.attention-actions button{border:2px solid #d5e5f4;border-radius:14px;min-height:105px;background:#f0f6fd;color:#1b4d80;font-size:16px;font-weight:800;padding:14px 8px;cursor:pointer}
+.attention-actions button:hover,.attention-actions button:focus{background:#d8ebff;border-color:#2a70b7}
+.attention-actions button.chosen{background:#d8ebff;border-color:#2a70b7}
+#attention-adult{text-align:left;background:#f0f6fd;padding:14px;border-radius:12px;margin:10px 0}
+#attention-adult input{width:100%;padding:12px;margin-top:7px}
+#attention-adult p{color:#965c1d;font-size:13px}
+#attention-confirm{width:100%;margin:10px 0;padding:15px;font-size:17px}
+#attention-feedback{font-weight:700;color:#175c8f}
+.attention-body>small{display:block;margin-top:14px;color:#6d8295}
+@media(max-width:550px){.attention-actions{grid-template-columns:1fr}.attention-actions button{min-height:60px}.attention-body{padding:18px 15px}.attention-overlay{padding:8px}}
