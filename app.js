@@ -82,7 +82,7 @@ function render(){document.body.className='theme-'+current;renderModules();const
 function search(){const q=$('student-search').value.trim().toLocaleLowerCase('es-CL');selected=null;$('selected').hidden=true;const list=$('matches');list.replaceChildren();if(q.length<2)return;const hits=students.filter(s=>s.active!==false).filter(s=>[s.name,s.rut,s.id,s.course].some(v=>v.toLocaleLowerCase('es-CL').includes(q))).slice(0,6);for(const s of hits){const b=el('button',s.name+' · '+s.course+' · '+s.id,'match');b.type='button';b.addEventListener('click',()=>choose(s));list.append(b)}}
 function choose(s){selected=s;updateTardySummary();refreshTardyPass();$('student-search').value=s.name;$('selected').textContent=s.name+' · '+s.course+' · '+s.rut;$('selected').hidden=false;$('matches').replaceChildren()}
 $('student-search').addEventListener('input',search);
-$('student-search').addEventListener('keydown',e=>{if(e.key!=='Enter')return;e.preventDefault();const q=$('student-search').value.trim().toLowerCase();const exact=students.find(s=>s.id.toLowerCase()===q||s.rut.toLowerCase()===q);const first=$('matches').querySelector('button');if(exact)choose(exact);else if(first)first.click()});
+$('student-search').addEventListener('keydown',e=>{if(e.key!=='Enter')return;e.preventDefault();const q=$('student-search').value.trim().toLowerCase();const exact=students.find(s=>s.id.toLowerCase()===q||s.rut.toLowerCase()===q);const first=$('matches').querySelector('button');if(exact){choose(exact);attentionOpen(exact,'Estudiante seleccionado manualmente.')}else if(first)first.click()});
 $('movement-form').addEventListener('submit',e=>{e.preventDefault();const feedback=$('feedback');feedback.className='';if(!selected||selected.active===false){feedback.textContent='Selecciona un estudiante activo de la lista.';feedback.className='error';return}const exceptional=$('exceptional').checked,reason=$('reason').value.trim();if(exceptional&&!reason){feedback.textContent='Indica el motivo del registro excepcional.';feedback.className='error';return}const today=todayRecords();if(current==='almuerzo'&&today.some(r=>r.module==='almuerzo'&&r.studentId===selected.id)){feedback.textContent='Este estudiante ya tiene un almuerzo registrado hoy.';feedback.className='error';return}let type=exceptional?'Excepcional':'Normal';
 if(current==='atrasos'){
  const now=new Date(),minutes=now.getHours()*60+now.getMinutes();
@@ -101,6 +101,57 @@ function tick(){$('clock').textContent=new Date().toLocaleString('es-CL',{dateSt
 const scanInput=$('scan-input');
 const recentScans=[];
 let identityTimer;
+
+let attentionPending=false,attentionAction='';
+function attentionOpen(student,message){
+ if(!student)return;
+ $('attention-overlay').hidden=false;
+ $('attention-name').textContent=student.name;
+ $('attention-course').textContent=student.course+' · '+student.id;
+ $('attention-avatar').textContent=student.name.trim().split(/\s+/).slice(0,2).map(x=>x[0]).join('').toUpperCase();
+ $('attention-message').textContent=message||'Selecciona el movimiento correspondiente.';
+ $('attention-feedback').textContent='';
+ $('attention-adult').hidden=true;
+ $('attention-adult-name').value='';
+ $('attention-confirm').hidden=true;
+ attentionPending=false;attentionAction='';
+ const area=$('attention-actions');area.replaceChildren();
+ const actions=current==='atrasos'?[['Atraso habitual','Atraso'],['Ingreso con pase','Con pase'],['Justificación del apoderado','Justificado']]:current==='retiros'||current==='temprano'?[['Titular','Apoderado titular'],['Suplente','Apoderado suplente'],['Otro autorizado','Otro autorizado']]:current==='pases'?[['Salida','Registrar salida'],['Regreso','Registrar regreso']]:current==='almuerzo'?[['Almuerzo','Registrar almuerzo']]:[['Ingreso con pase','Con pase'],['Justificación del apoderado','Justificado'],['Sin justificación','Sin justificación']];
+ for(const [value,label] of actions){
+  const btn=el('button',label);btn.type='button';
+  btn.addEventListener('click',()=>{
+   attentionAction=value;
+   area.querySelectorAll('button').forEach(b=>b.classList.toggle('chosen',b===btn));
+   if(current==='atrasos'){
+    const passBtn=[...document.querySelectorAll('.pass-type-btn')].find(b=>b.dataset.passType===value);
+    if(passBtn){passBtn.click();$('attention-feedback').textContent='Pase preparado para impresión. Puedes escanear al siguiente estudiante.'}
+    attentionPending=false;return;
+   }
+   attentionPending=true;
+   $('attention-adult').hidden=!(current==='retiros'||current==='temprano');
+   $('attention-confirm').hidden=false;
+   $('attention-feedback').textContent='Confirma el movimiento antes de continuar.';
+  });
+  area.append(btn);
+ }
+}
+$('attention-close').addEventListener('click',()=>{
+ if(attentionPending&&!window.confirm('Hay un movimiento sin confirmar. ¿Descartarlo?'))return;
+ $('attention-overlay').hidden=true;attentionPending=false;focusScanner();
+});
+$('attention-confirm').addEventListener('click',()=>{
+ if(!selected||!attentionAction)return;
+ if(current==='retiros'||current==='temprano'){
+  const adult=$('attention-adult-name').value.trim();
+  if(!adult){$('attention-feedback').textContent='Indica el nombre del adulto que retira y verifica su autorización.';return}
+  $('reason').value='Adulto que retira ('+attentionAction+'): '+adult;
+ }else if(current==='ingreso'){$('reason').value=attentionAction}
+ const before=records.length;
+ $('movement-form').requestSubmit();
+ if(records.length>before){attentionPending=false;$('attention-confirm').hidden=true;$('attention-feedback').textContent='✓ Movimiento registrado. Puedes escanear la siguiente credencial.'}
+ else $('attention-feedback').textContent=$('feedback').textContent||'No se pudo registrar.';
+});
+
 function showIdentity(student,message,status){const card=$('scan-identity');clearTimeout(identityTimer);card.hidden=false;card.className='scan-identity '+(status||'');$('scan-avatar').textContent=student?student.name.trim().split(/\s+/).slice(0,2).map(x=>x[0]).join('').toUpperCase():'?';$('scan-person-name').textContent=student?.name||'Código no reconocido';$('scan-person-course').textContent=student?.course||'Revisa la credencial';$('scan-person-result').textContent=message;if(current!=='atrasos')identityTimer=setTimeout(()=>{card.hidden=true},3000)}
 function showScan(message,status,student){
  const box=$('scan-status');box.textContent=message;box.className='scan-status'+(status==='error'?' error':status==='warning'?' warning':'');
@@ -120,7 +171,9 @@ scanInput.addEventListener('keydown',event=>{
  const code=scanInput.value.trim().toUpperCase();scanInput.value='';
  const student=students.find(s=>s.active!==false&&s.id.toUpperCase()===code);
  if(!student){showScan('Código no reconocido: '+(code||'(vacío)'),'error');showIdentity(null,'Código no reconocido','error');focusScanner();return}
+ if(attentionPending&&!window.confirm('Hay un movimiento pendiente. ¿Descartarlo para atender al siguiente estudiante?')){focusScanner();return}
  choose(student);
+ attentionOpen(student,'Credencial leída correctamente.');
  if(current==='atrasos'){const previous=todayRecords().find(r=>r.module==='atrasos'&&r.studentId===student.id);if(previous){const msg='Estudiante con ingreso registrado hoy a las '+new Date(previous.at).toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit'})+'. No se genera otro registro; puedes emitir el pase desde su tarjeta.';showScan(msg,'warning',student);showIdentity(student,msg,'warning');$('feedback').textContent=msg;focusScanner();setTimeout(focusScanner,0);return}}
  if((current==='atrasos'||current==='almuerzo')&&!$('exceptional').checked&&!$('reason').value.trim()){
    const before=records.length;
