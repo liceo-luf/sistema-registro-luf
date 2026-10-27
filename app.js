@@ -25,25 +25,31 @@ $('reset').addEventListener('click',()=>{if(!confirm('¿Eliminar todos los movim
 function tick(){$('clock').textContent=new Date().toLocaleString('es-CL',{dateStyle:'full',timeStyle:'short'})}tick();setInterval(tick,30000);render();
 // USB scanners operating as keyboards typically append Enter after the code.
 const scanInput=$('scan-input');
-$('scan-focus').addEventListener('click',()=>scanInput.focus());
+const recentScans=[];
+function showScan(message,status,student){
+ const box=$('scan-status');box.textContent=message;box.className='scan-status'+(status==='error'?' error':status==='warning'?' warning':'');
+ recentScans.unshift({message,at:new Date(),student:student?.name||''});recentScans.length=Math.min(recentScans.length,5);
+ const list=$('scan-recent');list.replaceChildren();for(const item of recentScans){const li=el('li',item.message);li.append(el('small',item.at.toLocaleTimeString('es-CL')));list.append(li)}
+}
+function focusScanner(){scanInput.focus()}
+$('scan-focus').addEventListener('click',focusScanner);
 scanInput.addEventListener('keydown',event=>{
  if(event.key!=='Enter')return;
  event.preventDefault();
- const code=scanInput.value.trim().toUpperCase();
- scanInput.value='';
+ const code=scanInput.value.trim().toUpperCase();scanInput.value='';
  const student=students.find(s=>s.id.toUpperCase()===code);
- const feedback=$('feedback');feedback.className='';
- if(!student){feedback.textContent='Código no reconocido. Prueba LUF-001, LUF-002, LUF-003 o LUF-004.';feedback.className='error';scanInput.focus();return}
+ if(!student){showScan('Código no reconocido: '+(code||'(vacío)'),'error');focusScanner();return}
  choose(student);
- // Do not bypass fields or authorization checks in withdrawal/pass modules.
- if(current==='atrasos'||current==='almuerzo'){
-   if($('exceptional').checked||$('reason').value.trim()){
-     feedback.textContent='Estudiante identificado. Confirma el registro con el botón del formulario.';
-   }else{
-     $('movement-form').requestSubmit();
-   }
+ if((current==='atrasos'||current==='almuerzo')&&!$('exceptional').checked&&!$('reason').value.trim()){
+   const before=records.length;
+   $('movement-form').requestSubmit();
+   if(records.length>before){showScan('✓ '+student.name+' · '+student.course+' · registro exitoso','success',student)}
+   else{showScan('Atención: '+student.name+' · '+$('feedback').textContent,'warning',student)}
  }else{
-   feedback.textContent='Estudiante identificado por QR. Completa los datos y confirma manualmente el movimiento.';
+   showScan('Identificado: '+student.name+' · '+student.course+' · requiere confirmación manual','warning',student);
+   $('feedback').textContent='Completa los datos y confirma manualmente el movimiento.';
  }
- scanInput.focus();
+ focusScanner();
 });
+// Start ready for the first scan. Scanning keeps focus on the same field.
+focusScanner();
