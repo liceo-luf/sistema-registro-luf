@@ -12,13 +12,13 @@ const tardyDefaults={start:'08:10',tolerance:10,exception:'08:30',alert:3};
 let tardySettings={...tardyDefaults};
 try{const stored=JSON.parse(localStorage.getItem(tardyKey)||'null');if(stored&&typeof stored==='object')tardySettings={...tardyDefaults,...stored}}catch{}
 function minuteOf(time){const [h,m]=time.split(':').map(Number);return h*60+m}
-function tardyMonthly(id){const month=dateKey(new Date()).slice(0,7);return records.filter(r=>r.module==='atrasos'&&r.studentId===id&&r.at&&dateKey(new Date(r.at)).startsWith(month))}
+function tardyMonthly(id){const month=dateKey(new Date()).slice(0,7);return records.filter(r=>r.module==='atrasos'&&r.passType!=='Ingreso con pase'&&r.passType!=='Justificación del apoderado'&&r.studentId===id&&r.at&&dateKey(new Date(r.at)).startsWith(month))}
 function updateTardySummary(){const box=$('tardy-summary');if(!selected){box.textContent='Selecciona o escanea un estudiante para ver sus atrasos del mes.';return}const list=tardyMonthly(selected.id);const normal=list.filter(r=>r.type==='Normal').length,exceptional=list.filter(r=>r.type==='Excepcional').length;box.textContent=selected.name+' · Este mes: '+normal+' normales y '+exceptional+' excepcionales ('+list.length+' en total).'+(list.length>=tardySettings.alert?' ⚠ Umbral de alerta alcanzado.':'')}
 function loadTardySettings(){for(const [field,key] of [['tardy-start','start'],['tardy-tolerance','tolerance'],['tardy-exception-time','exception'],['tardy-alert-count','alert']])$(field).value=tardySettings[key]}
 loadTardySettings();
 $('tardy-save').addEventListener('click',()=>{const next={start:$('tardy-start').value,exception:$('tardy-exception-time').value,tolerance:Number($('tardy-tolerance').value),alert:Number($('tardy-alert-count').value)};if(!/^\d\d:\d\d$/.test(next.start)||!/^\d\d:\d\d$/.test(next.exception)||next.exception<=next.start||!Number.isInteger(next.tolerance)||next.tolerance<0||next.tolerance>60||!Number.isInteger(next.alert)||next.alert<1||next.alert>30){$('tardy-config-feedback').textContent='Revisa los horarios y los valores.';return}try{localStorage.setItem(tardyKey,JSON.stringify(next));tardySettings=next;$('tardy-config-feedback').textContent='Configuración de prueba guardada.';updateTardySummary();refreshTardyPass()}catch{$('tardy-config-feedback').textContent='No se pudo guardar la configuración.'}});
 
-function refreshTardyPass(){const area=$('tardy-pass-actions');if(!area)return;const last=selected&&records.filter(r=>r.module==='atrasos'&&r.studentId===selected.id&&dateKey(new Date(r.at))===dateKey(new Date())).at(-1);area.hidden=current!=='atrasos'||!last;area.dataset.recordId=last?.id||'';if(last){$('tardy-pass-type').value=last.passType||'Atraso habitual';$('tardy-pass-note').value=last.passNote||'';syncPassButtons()}}
+function refreshTardyPass(){const area=$('tardy-pass-actions');if(!area)return;const last=selected&&records.filter(r=>r.module==='atrasos'&&r.studentId===selected.id&&dateKey(new Date(r.at))===dateKey(new Date())).at(-1);area.hidden=current!=='atrasos'||!selected;area.dataset.recordId=last?.id||'';if(last){$('tardy-pass-type').value=last.passType||'Atraso habitual';$('tardy-pass-note').value=last.passNote||'';syncPassButtons()}}
 function printTardyPass(){
  const record=records.find(r=>r.id===$('tardy-pass-actions').dataset.recordId);
  const student=record&&students.find(s=>s.id===record.studentId);
@@ -52,14 +52,30 @@ function printTardyPass(){
  popup.document.open();popup.document.write(html);popup.document.close();popup.focus();popup.print();
 }
 function syncPassButtons(){document.querySelectorAll('.pass-type-btn').forEach(button=>{const active=button.dataset.passType===$('tardy-pass-type').value;button.setAttribute('aria-pressed',String(active));button.classList.toggle('pass-type-active',active)})}
-document.querySelectorAll('.pass-type-btn').forEach(button=>button.addEventListener('click',()=>{$('tardy-pass-type').value=button.dataset.passType;syncPassButtons();printTardyPass()}));
+document.querySelectorAll('.pass-type-btn').forEach(button=>button.addEventListener('click',()=>{
+ if(!selected||current!=='atrasos')return;
+ const passType=button.dataset.passType;
+ let record=records.find(r=>r.id===$('tardy-pass-actions').dataset.recordId);
+ if(!record){
+   record={id:globalThis.crypto?.randomUUID?.()||String(Date.now())+'-'+Math.random(),at:new Date().toISOString(),module:'atrasos',studentId:selected.id,type:passType==='Atraso habitual'?'Normal':'Ingreso autorizado',reason:'',passType};
+   records.push(record);
+   if(!persist()){records.pop();$('feedback').textContent='No se pudo guardar el ingreso.';return}
+ }else if(record.passType!==passType){
+   record.passType=passType;
+   record.type=passType==='Atraso habitual'?'Normal':'Ingreso autorizado';
+   if(!persist()){$('feedback').textContent='No se pudo actualizar el motivo.';return}
+ }
+ $('tardy-pass-type').value=passType;
+ refreshTardyPass();renderStats();renderHistory();updateTardySummary();
+ printTardyPass();
+}));
 $('print-tardy-pass').addEventListener('click',printTardyPass);
 function load(){try{const data=JSON.parse(localStorage.getItem(key)||'[]');return Array.isArray(data)?data:[]}catch{return []}}
 function persist(){try{localStorage.setItem(key,JSON.stringify(records));return true}catch{return false}}
 function el(tag,text,cls){const node=document.createElement(tag);if(text!==undefined)node.textContent=text;if(cls)node.className=cls;return node}
 function dateKey(d){return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')}
 function todayRecords(){const day=dateKey(new Date());return records.filter(r=>dateKey(new Date(r.at))===day)}
-function renderStats(){const today=todayRecords();const values=[['Movimientos hoy',today.length],['Atrasos hoy',today.filter(r=>r.module==='atrasos').length],['Retiros hoy',today.filter(r=>r.module==='retiros'||r.module==='temprano').length],['Almuerzos hoy',today.filter(r=>r.module==='almuerzo').length]];$('stats').replaceChildren(...values.map(([label,value])=>{const card=el('div',undefined,'stat');card.append(el('small',label),el('strong',String(value)));return card}))}
+function renderStats(){const today=todayRecords();const values=[['Movimientos hoy',today.length],['Atrasos hoy',today.filter(r=>r.module==='atrasos'&&r.passType!=='Ingreso con pase'&&r.passType!=='Justificación del apoderado').length],['Retiros hoy',today.filter(r=>r.module==='retiros'||r.module==='temprano').length],['Almuerzos hoy',today.filter(r=>r.module==='almuerzo').length]];$('stats').replaceChildren(...values.map(([label,value])=>{const card=el('div',undefined,'stat');card.append(el('small',label),el('strong',String(value)));return card}))}
 function renderModules(){$('modules').replaceChildren(...modules.map(([id,title,desc])=>{const btn=el('button',title,'module theme-'+id+(id===current?' active':''));btn.type='button';btn.append(el('span',desc));btn.addEventListener('click',()=>{current=id;selected=null;$('student-search').value='';$('reason').value='';$('exceptional').checked=false;$('selected').hidden=true;$('matches').replaceChildren();$('feedback').textContent='';render()});return btn}))}
 function renderHistory(){const body=$('history');body.replaceChildren();const rows=records.filter(r=>r.module===current).slice().reverse().slice(0,20);if(!rows.length){const tr=el('tr');const td=el('td','Sin movimientos registrados en este módulo.');td.colSpan=5;tr.append(td);body.append(tr);return}for(const r of rows){const tr=el('tr');const s=students.find(x=>x.id===r.studentId);const values=[new Date(r.at).toLocaleString('es-CL'),s?s.name:'Desconocido',modules.find(m=>m[0]===r.module)?.[1]||r.module,r.type,r.reason||'—'];tr.append(...values.map(v=>el('td',v)));body.append(tr)}}
 function render(){document.body.className='theme-'+current;renderModules();const m=modules.find(x=>x[0]===current);$('module-title').textContent=m[1];$('module-desc').textContent=m[2];renderStats();renderHistory();$('tardy-counter').hidden=current!=='atrasos';updateTardySummary()}
