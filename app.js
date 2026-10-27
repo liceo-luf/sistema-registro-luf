@@ -34,7 +34,7 @@ $('student-search').addEventListener('keydown',e=>{if(e.key!=='Enter')return;e.p
 $('movement-form').addEventListener('submit',e=>{e.preventDefault();const feedback=$('feedback');feedback.className='';if(!selected||selected.active===false){feedback.textContent='Selecciona un estudiante activo de la lista.';feedback.className='error';return}const exceptional=$('exceptional').checked,reason=$('reason').value.trim();if(exceptional&&!reason){feedback.textContent='Indica el motivo del registro excepcional.';feedback.className='error';return}const today=todayRecords();if(current==='almuerzo'&&today.some(r=>r.module==='almuerzo'&&r.studentId===selected.id)){feedback.textContent='Este estudiante ya tiene un almuerzo registrado hoy.';feedback.className='error';return}let type=exceptional?'Excepcional':'Normal';
 if(current==='atrasos'){
  const now=new Date(),minutes=now.getHours()*60+now.getMinutes();
- if(today.some(r=>r.module==='atrasos'&&r.studentId===selected.id)){feedback.textContent='Ya existe un atraso registrado hoy para este estudiante.';feedback.className='error';return}
+ const previous=today.find(r=>r.module==='atrasos'&&r.studentId===selected.id);if(previous){feedback.textContent='Estudiante con atraso registrado hoy a las '+new Date(previous.at).toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit'})+'. No se genera otro registro.';feedback.className='error';return}
  if(minutes<minuteOf(tardySettings.start)+tardySettings.tolerance){feedback.textContent='Todavía está dentro del horario permitido. No se registra atraso.';feedback.className='error';return}
  const needsExceptional=minutes>=minuteOf(tardySettings.exception);
  if(needsExceptional&&!exceptional){feedback.textContent='Fuera del horario normal: marca Registro excepcional e indica el motivo.';feedback.className='error';return}
@@ -69,6 +69,7 @@ scanInput.addEventListener('keydown',event=>{
  const student=students.find(s=>s.active!==false&&s.id.toUpperCase()===code);
  if(!student){showScan('Código no reconocido: '+(code||'(vacío)'),'error');showIdentity(null,'Código no reconocido','error');focusScanner();return}
  choose(student);
+ if(current==='atrasos'){const previous=todayRecords().find(r=>r.module==='atrasos'&&r.studentId===student.id);if(previous){const msg='Estudiante con atraso registrado hoy a las '+new Date(previous.at).toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit'})+'. No se genera otro registro.';showScan(msg,'warning',student);showIdentity(student,msg,'warning');$('feedback').textContent=msg;focusScanner();setTimeout(focusScanner,0);return}}
  if((current==='atrasos'||current==='almuerzo')&&!$('exceptional').checked&&!$('reason').value.trim()&&(current!=='atrasos'||(new Date().getHours()*60+new Date().getMinutes()<minuteOf(tardySettings.exception)))){
    const before=records.length;
    $('movement-form').requestSubmit();
