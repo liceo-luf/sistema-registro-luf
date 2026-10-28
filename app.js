@@ -5,6 +5,7 @@ let students=[{id:'LUF-001',name:'Camila Pérez',rut:'11111111-1',course:'1° A'
 const key='sistema-registro-luf-demo-v1';
 const rosterKey='sistema-registro-luf-students-demo-v1';
 const $=id=>document.getElementById(id);
+const scanInput=$('scan-input');
 try{const saved=JSON.parse(localStorage.getItem(rosterKey)||'null');if(Array.isArray(saved))students=saved}catch{}
 let current='atrasos',selected=null,records=load();
 const tardyKey='sistema-registro-luf-tardy-settings-v1';
@@ -114,7 +115,6 @@ $('export').addEventListener('click',()=>{const rows=[['Fecha y hora','Código',
 $('reset').addEventListener('click',()=>{if(!confirm('¿Eliminar todos los movimientos ficticios guardados en este navegador?'))return;records=[];localStorage.removeItem(key);$('feedback').textContent='Datos de prueba restablecidos.';render()});
 function tick(){$('clock').textContent=new Date().toLocaleString('es-CL',{dateStyle:'full',timeStyle:'short'})}tick();setInterval(tick,30000);render();
 // USB scanners operating as keyboards typically append Enter after the code.
-const scanInput=$('scan-input');
 const recentScans=[];
 let identityTimer;
 
