@@ -90,7 +90,35 @@ function renderWithdrawalHistory(){
   tr.append(...values.map(value=>el('td',value)));body.append(tr);
  }
 }
-function renderHistory(){renderWithdrawalHistory();const body=$('history');body.replaceChildren();const rows=records.filter(r=>r.module===current).slice().reverse().slice(0,20);if(!rows.length){const tr=el('tr');const td=el('td','Sin movimientos registrados en este módulo.');td.colSpan=5;tr.append(td);body.append(tr);return}for(const r of rows){const tr=el('tr');const s=students.find(x=>x.id===r.studentId);const values=[new Date(r.at).toLocaleString('es-CL'),s?s.name:'Desconocido',modules.find(m=>m[0]===r.module)?.[1]||r.module,r.type,r.reason||'—'];tr.append(...values.map(v=>el('td',v)));body.append(tr)}}
+function lunchState(){
+ const day=todayRecords().filter(r=>r.module==='pases');
+ const pending=new Map();
+ for(const r of day){if(r.type==='Salida')pending.set(r.studentId,r);else if(r.type==='Regreso')pending.delete(r.studentId)}
+ return {day,pending};
+}
+function renderLunchControl(){
+ const section=$('lunch-control');section.hidden=current!=='pases';
+ if(current!=='pases')return;
+ const {day,pending}=lunchState();
+ const summary=$('lunch-summary');summary.replaceChildren();
+ for(const [label,value] of [['Salidas del día',day.filter(r=>r.type==='Salida').length],['Regresos',day.filter(r=>r.type==='Regreso').length],['Estudiantes fuera',pending.size]]){
+  const box=el('div',undefined,'lunch-stat');box.append(el('small',label),el('strong',String(value)));summary.append(box);
+ }
+ const body=$('lunch-outside');body.replaceChildren();
+ if(!pending.size){const tr=el('tr'),td=el('td','No hay estudiantes pendientes de regreso.');td.colSpan=4;tr.append(td);body.append(tr)}
+ for(const [id,departure] of pending){
+  const s=students.find(x=>x.id===id),tr=el('tr');
+  for(const value of [s?.name||id,s?.course||'—',new Date(departure.at).toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit'})])tr.append(el('td',value));
+  const cell=el('td'),btn=el('button','Autorizar regreso','primary');btn.type='button';
+  btn.addEventListener('click',()=>{
+   if(!s||s.active===false){alert('El estudiante ya no figura activo. Revisa su registro.');return}
+   if(attentionPending&&!window.confirm('Hay un movimiento pendiente. ¿Descartarlo?'))return;
+   choose(s);attentionOpen(s,'Regreso pendiente desde las '+new Date(departure.at).toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit'})+'. Verifica al estudiante.');
+  });
+  cell.append(btn);tr.append(cell);body.append(tr);
+ }
+}
+function renderHistory(){renderWithdrawalHistory();renderLunchControl();const body=$('history');body.replaceChildren();const rows=records.filter(r=>r.module===current).slice().reverse().slice(0,20);if(!rows.length){const tr=el('tr');const td=el('td','Sin movimientos registrados en este módulo.');td.colSpan=5;tr.append(td);body.append(tr);return}for(const r of rows){const tr=el('tr');const s=students.find(x=>x.id===r.studentId);const values=[new Date(r.at).toLocaleString('es-CL'),s?s.name:'Desconocido',modules.find(m=>m[0]===r.module)?.[1]||r.module,r.type,r.reason||'—'];tr.append(...values.map(v=>el('td',v)));body.append(tr)}}
 function render(){document.body.className='theme-'+current;$('withdrawal-entry').hidden=current!=='retiros';scanInput.disabled=current==='retiros';scanInput.placeholder=current==='retiros'?'QR desactivado en Retiros':'Escanea aquí: LUF-001';$('student-search').placeholder=current==='retiros'?'Ingrese RUT del estudiante (obligatorio)':'Buscar estudiante por nombre, RUT o código QR';renderModules();const m=modules.find(x=>x[0]===current);$('module-title').textContent=m[1];$('module-desc').textContent=m[2];renderStats();renderHistory();$('tardy-counter').hidden=current!=='atrasos';updateTardySummary()}
 function findWithdrawalStudent(){
  const input=$('withdrawal-rut'),feedback=$('withdrawal-feedback');
@@ -121,7 +149,7 @@ if(current==='atrasos'){
  if(needsExceptional&&!exceptional){feedback.textContent='Fuera del horario normal: marca Registro excepcional e indica el motivo.';feedback.className='error';return}
  if(needsExceptional&&!reason){feedback.textContent='El atraso excepcional requiere motivo.';feedback.className='error';return}
 }
-if(current==='pases'){const last=records.filter(r=>r.module==='pases'&&r.studentId===selected.id).at(-1);type=last?.type==='Salida'?'Regreso':'Salida'}const record={id:globalThis.crypto?.randomUUID?.()||String(Date.now())+'-'+Math.random(),at:new Date().toISOString(),module:current,studentId:selected.id,type,reason};records.push(record);if(!persist()){records.pop();feedback.textContent='No se pudo guardar el registro en este navegador.';feedback.className='error';return}feedback.textContent='Movimiento registrado correctamente (solo en este navegador).';$('reason').value='';$('exceptional').checked=false;renderStats();renderHistory();updateTardySummary();refreshTardyPass();if(current==='atrasos'&&tardyMonthly(selected.id).length>=tardySettings.alert)feedback.textContent+=' ⚠ Umbral mensual de atrasos alcanzado.'});
+if(current==='pases'){const pending=lunchState().pending.has(selected.id);if(!attentionPending||!attentionAction){feedback.textContent='Confirma la salida o el regreso desde la pantalla de atención.';feedback.className='error';return}if((attentionAction==='Salida'&&pending)||(attentionAction==='Regreso'&&!pending)){feedback.textContent='El estado del estudiante cambió. Vuelve a verificarlo.';feedback.className='error';return}type=attentionAction}const record={id:globalThis.crypto?.randomUUID?.()||String(Date.now())+'-'+Math.random(),at:new Date().toISOString(),module:current,studentId:selected.id,type,reason};records.push(record);if(!persist()){records.pop();feedback.textContent='No se pudo guardar el registro en este navegador.';feedback.className='error';return}feedback.textContent='Movimiento registrado correctamente (solo en este navegador).';$('reason').value='';$('exceptional').checked=false;renderStats();renderHistory();updateTardySummary();refreshTardyPass();if(current==='atrasos'&&tardyMonthly(selected.id).length>=tardySettings.alert)feedback.textContent+=' ⚠ Umbral mensual de atrasos alcanzado.'});
 function csvCell(v){return '"'+String(v??'').replaceAll('"','""')+'"'}
 $('export').addEventListener('click',()=>{const rows=[['Fecha y hora','Código','Estudiante','Curso','Módulo','Tipo','Observación'],...records.filter(r=>r.module===current).map(r=>{const s=students.find(x=>x.id===r.studentId);return [new Date(r.at).toLocaleString('es-CL'),r.studentId,s?.name||'',s?.course||'',r.module,r.type,r.reason]})];const csv='\uFEFF'+rows.map(row=>row.map(csvCell).join(';')).join('\r\n');const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='luf-'+current+'-'+dateKey(new Date())+'.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)});
 $('reset').addEventListener('click',()=>{if(!confirm('¿Eliminar todos los movimientos ficticios guardados en este navegador?'))return;records=[];localStorage.removeItem(key);$('feedback').textContent='Datos de prueba restablecidos.';render()});
@@ -146,7 +174,7 @@ function attentionOpen(student,message){
  $('attention-confirm').hidden=true;
  attentionPending=false;attentionAction='';
  const area=$('attention-actions');area.replaceChildren();
- const actions=current==='atrasos'?[['Atraso habitual','Atraso'],['Ingreso con pase','Con pase'],['Justificación del apoderado','Justificado']]:current==='retiros'||current==='temprano'?[['Titular','Apoderado titular'],['Suplente','Apoderado suplente'],['Otro autorizado','Otro autorizado']]:current==='pases'?[['Salida','Registrar salida'],['Regreso','Registrar regreso']]:current==='almuerzo'?[['Almuerzo','Registrar almuerzo']]:[['Ingreso con pase','Con pase'],['Justificación del apoderado','Justificado'],['Sin justificación','Sin justificación']];
+ const actions=current==='atrasos'?[['Atraso habitual','Atraso'],['Ingreso con pase','Con pase'],['Justificación del apoderado','Justificado']]:current==='retiros'||current==='temprano'?[['Titular','Apoderado titular'],['Suplente','Apoderado suplente'],['Otro autorizado','Otro autorizado']]:current==='pases'?(lunchState().pending.has(student.id)?[['Regreso','Confirmar regreso']]:[['Salida','Autorizar salida']]):current==='almuerzo'?[['Almuerzo','Registrar almuerzo']]:[['Ingreso con pase','Con pase'],['Justificación del apoderado','Justificado'],['Sin justificación','Sin justificación']];
  for(const [value,label] of actions){
   const btn=el('button',label);btn.type='button';
   btn.addEventListener('click',()=>{
@@ -180,7 +208,7 @@ $('attention-confirm').addEventListener('click',()=>{
  }else if(current==='ingreso'){$('reason').value=attentionAction}
  const before=records.length;
  $('movement-form').requestSubmit();
- if(records.length>before){attentionPending=false;$('attention-confirm').hidden=true;$('attention-feedback').textContent='✓ Movimiento registrado correctamente.';if(current==='retiros'){$('attention-overlay').hidden=true;selected=null;$('withdrawal-rut').value='';$('withdrawal-feedback').textContent='✓ Retiro registrado correctamente.';$('withdrawal-matches').hidden=true;$('withdrawal-rut').focus({preventScroll:true})}}
+ if(records.length>before){attentionPending=false;$('attention-confirm').hidden=true;$('attention-feedback').textContent='✓ Movimiento registrado correctamente.';if(current==='pases'){$('attention-overlay').hidden=true;selected=null;focusScanner()}if(current==='retiros'){$('attention-overlay').hidden=true;selected=null;$('withdrawal-rut').value='';$('withdrawal-feedback').textContent='✓ Retiro registrado correctamente.';$('withdrawal-matches').hidden=true;$('withdrawal-rut').focus({preventScroll:true})}}
  else $('attention-feedback').textContent=$('feedback').textContent||'No se pudo registrar.';
 });
 
