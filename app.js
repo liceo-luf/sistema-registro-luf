@@ -175,8 +175,8 @@ function attentionOpen(student,message){
  $('attention-verified').checked=false;
  $('attention-confirm').hidden=true;
  attentionPending=false;attentionAction='';
- const area=$('attention-actions');area.replaceChildren();
- if(current==='pases'&&!lunchState().pending.has(student.id)&&!lunchExitAllowed())$('attention-feedback').textContent='Fuera del horario de almuerzo (13:55 a 14:55): no se puede autorizar la salida.';
+ const area=$('attention-actions');area.replaceChildren();$('lunch-operator-wrap').hidden=current!=='pases';$('lunch-operator').value='';$('attention-feedback').classList.remove('lunch-blocked');
+ if(current==='pases'&&!lunchState().pending.has(student.id)&&!lunchExitAllowed()){$('attention-feedback').textContent='⛔ SALIDA NO AUTORIZADA — FUERA DEL HORARIO DE ALMUERZO (13:55 A 14:55)';$('attention-feedback').classList.add('lunch-blocked')}
  const actions=current==='atrasos'?[['Atraso habitual','Atraso'],['Ingreso con pase','Con pase'],['Justificación del apoderado','Justificado']]:current==='retiros'||current==='temprano'?[['Titular','Apoderado titular'],['Suplente','Apoderado suplente'],['Otro autorizado','Otro autorizado']]:current==='pases'?(lunchState().pending.has(student.id)?[['Regreso','Confirmar regreso']]:[['Salida','Autorizar salida']]):current==='almuerzo'?[['Almuerzo','Registrar almuerzo']]:[['Ingreso con pase','Con pase'],['Justificación del apoderado','Justificado'],['Sin justificación','Sin justificación']];
  for(const [value,label] of actions){
   const btn=el('button',label);btn.type='button';
