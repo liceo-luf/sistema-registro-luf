@@ -136,3 +136,39 @@ footer{color:#71869c}.tag{font-size:11px}
 .settings-open #student-admin{display:block!important}
 .settings-open #admin-content{display:block!important}
 @media(max-width:720px){.top-actions{width:100%}.top-tabs{width:100%}.top-tab{flex:1}.top{flex-wrap:wrap}}
+
+
+/* Approved LUF light dashboard — visual layer, existing workflows retained */
+:root{font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;background:#f5f8fc;color:#132d50;color-scheme:light}
+body{background:#f5f8fc;color:#132d50}
+.top{background:linear-gradient(110deg,#0b2b4d,#123c67);color:white;padding:16px clamp(16px,3vw,48px);border-bottom:0;box-shadow:0 3px 12px #173c6020}
+.brand strong{font-size:18px}.brand small{color:#d5e4f5}.mark{background:#fff2ca;color:#123e70;border:2px solid #d3a743;border-radius:10px}
+.top-tabs{background:#ffffff12;border:0}.top-tab{color:#e8f3ff;padding:12px 22px}.top-tab.active{background:#126ce2;color:#fff;box-shadow:0 2px 8px #0002}.demo{color:#dce8f5;border-color:#ffffff50}
+main{max-width:1580px;padding:24px clamp(16px,2vw,38px)}
+.intro{margin-bottom:18px}.intro h1{font-size:clamp(24px,2.6vw,34px);color:#0f3155}.intro p:not(.eyebrow),#module-desc{color:#5c718b}.eyebrow{color:#176ad5}.clock{color:#3c5877}
+.stats{gap:12px;margin-bottom:18px}.stat,.panel{background:#fff;border:1px solid #d9e3ee;box-shadow:0 3px 12px #102b4610}.stat{border-radius:12px}.stat small{color:#6b7e95}.stat strong{color:#143d68}
+.workspace{grid-template-columns:minmax(210px,265px) minmax(0,1fr);gap:16px}
+.modules{gap:10px}.module{background:#fff;color:#163858;border:1px solid #d8e5f1;border-left:5px solid #176de0;border-radius:12px;padding:17px;box-shadow:0 2px 8px #16385c0b}.module:nth-child(2){border-left-color:#19874c}.module:nth-child(3){border-left-color:#236cdd}.module:nth-child(4){border-left-color:#f28a12}.module:nth-child(5){border-left-color:#7651c6}.module:nth-child(6){border-left-color:#168e92}.module:hover,.module.active{background:#eaf3ff;border-color:#93bee9;color:#0c4687}.module span{color:#71849b}
+.panel{border-radius:16px}.panel h2{color:#173d67}.tag{color:#2165a6;border-color:#b5d3ed}
+.primary{background:#126de0;color:#fff}.secondary{background:#edf4fc;color:#174b82;border-color:#c7d9eb}.danger{color:#a82736;border-color:#e3aab1}
+input:not([type=checkbox]),textarea,select{background:#fff;color:#163454;border-color:#c5d5e7}
+table{color:#1e3858}th{background:#f1f6fc;color:#536c88}td,th{border-bottom-color:#e2eaf2}
+.selected{background:#e8f7f1;color:#15543f;border-color:#a4ddc5}
+.settings-open #settings-view{display:block;margin:8px 0}
+.settings-shell{display:grid;grid-template-columns:235px minmax(0,1fr);gap:22px;align-items:start}
+.settings-sidebar{display:grid;gap:6px;position:sticky;top:12px}
+.settings-nav-item{background:transparent;color:#344e6d;border:0;border-radius:9px;padding:14px 16px;text-align:left;font-weight:650}
+.settings-nav-item:hover{background:#e6effc}.settings-nav-item.active{background:#126de0;color:white}
+.settings-content{min-width:0}.settings-intro h2{color:#153b64}.settings-intro p{color:#657b94}
+.settings-overview h3{color:#173b65;font-size:20px}.settings-tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.settings-tile{display:grid;grid-template-columns:54px 1fr;grid-template-rows:auto auto;column-gap:13px;align-items:center;text-align:left;background:#fff;border:1px solid #dce7f2;border-radius:14px;padding:17px;color:#17395d;box-shadow:0 3px 9px #16365b0a}
+.settings-tile:hover{border-color:#82b7ed;background:#f7fbff}.settings-tile-icon{grid-row:span 2;display:grid;place-items:center;width:52px;height:52px;background:#e8f2ff;border-radius:12px;font-size:27px}.settings-tile strong{font-size:16px}.settings-tile small{color:#667e99;line-height:1.4}
+.settings-card,.settings-open #student-admin{background:#fff;border:1px solid #dce6f0;border-radius:15px;padding:22px;color:#173859}
+.settings-card h3{color:#163c64}.settings-card-heading{display:flex;align-items:center;gap:13px;margin-bottom:18px}.settings-card-heading strong{display:block;font-size:19px}.settings-card-heading small{display:block;color:#67809b;margin-top:4px}.settings-card-icon{display:grid;place-items:center;background:#eaf2ff;border-radius:12px;width:52px;height:52px;font-size:26px}
+.settings-card input:not([type=checkbox]),.settings-card select,.settings-card textarea{background:#fff;color:#173859;border-color:#c5d6e8}
+.settings-section[hidden],.settings-overview[hidden],.settings-open #student-admin[hidden]{display:none!important}
+.settings-open #student-admin{display:block}
+.settings-open #admin-content{display:block}
+.settings-open .settings-intro{margin-bottom:20px}
+@media(max-width:900px){.settings-shell{grid-template-columns:1fr}.settings-sidebar{display:flex;overflow-x:auto;position:static;padding-bottom:8px}.settings-nav-item{white-space:nowrap}.settings-tiles{grid-template-columns:1fr}}
+@media(max-width:650px){.workspace{grid-template-columns:1fr}.modules{grid-template-columns:repeat(2,minmax(0,1fr))}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.settings-tile{padding:12px}.top{gap:12px}.demo{display:none}}
