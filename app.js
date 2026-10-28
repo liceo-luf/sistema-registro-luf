@@ -180,7 +180,7 @@ $('attention-confirm').addEventListener('click',()=>{
  }else if(current==='ingreso'){$('reason').value=attentionAction}
  const before=records.length;
  $('movement-form').requestSubmit();
- if(records.length>before){attentionPending=false;$('attention-confirm').hidden=true;$('attention-feedback').textContent='✓ Movimiento registrado. Puedes escanear la siguiente credencial.'}
+ if(records.length>before){attentionPending=false;$('attention-confirm').hidden=true;$('attention-feedback').textContent='✓ Movimiento registrado correctamente.';if(current==='retiros'){$('attention-overlay').hidden=true;selected=null;$('withdrawal-rut').value='';$('withdrawal-feedback').textContent='✓ Retiro registrado correctamente.';$('withdrawal-matches').hidden=true;$('withdrawal-rut').focus({preventScroll:true})}}
  else $('attention-feedback').textContent=$('feedback').textContent||'No se pudo registrar.';
 });
 
