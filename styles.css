@@ -88,3 +88,15 @@ footer{color:#71869c}.tag{font-size:11px}
 #attention-feedback{font-weight:700;color:#175c8f}
 .attention-body>small{display:block;margin-top:14px;color:#6d8295}
 @media(max-width:550px){.attention-actions{grid-template-columns:1fr}.attention-actions button{min-height:60px}.attention-body{padding:18px 15px}.attention-overlay{padding:8px}}
+
+/* Dedicated RUT-only withdrawal landing view */
+.withdrawal-entry[hidden]{display:none!important}
+.theme-retiros .scanner-box,.theme-retiros #movement-form,.theme-retiros #feedback,.theme-retiros .history-head,.theme-retiros .table-wrap{display:none!important}
+.withdrawal-entry{min-height:460px;margin:26px 0 35px;padding:55px 30px;text-align:center;border-radius:22px;border:1px solid #c8dcf2;background:linear-gradient(160deg,#f1f7ff,#ffffff);box-shadow:0 12px 40px #164a7b10;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:15px}
+.withdrawal-symbol{background:#174b83;color:#fff;border-radius:20px;padding:18px;font-weight:900;font-size:26px;letter-spacing:.07em}
+.withdrawal-entry h3{font-size:clamp(28px,4vw,42px);color:#123d6b;margin:4px 0}
+.withdrawal-entry p{color:#52708e;font-size:16px;margin:0 0 14px}
+.withdrawal-entry label{font-weight:850;color:#164978;font-size:15px;letter-spacing:.08em}
+#withdrawal-rut{width:min(600px,100%);font-size:clamp(26px,4vw,38px);text-align:center;letter-spacing:.035em;padding:20px 18px;border:3px solid #77aee4;border-radius:15px;background:#fff;color:#153e68}
+#withdrawal-find{min-width:260px;padding:16px 26px;font-size:18px;border-radius:12px}
+#withdrawal-feedback{color:#ae3434;font-weight:700;min-height:22px}
