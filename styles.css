@@ -113,3 +113,26 @@ footer{color:#71869c}.tag{font-size:11px}
 #attention-feedback.lunch-blocked{display:block!important;background:#fee2e2!important;color:#991b1b!important;border:3px solid #dc2626!important;border-radius:14px!important;padding:20px!important;font-size:clamp(22px,3vw,34px)!important;line-height:1.25!important;font-weight:900!important;text-align:center!important;letter-spacing:.02em!important}.lunch-operator-wrap[hidden]{display:none!important}.lunch-operator-wrap{margin:16px 0;padding:14px;background:#eff6ff;border:1px solid #93c5fd;border-radius:12px}.lunch-operator-wrap label{display:block;font-weight:700;margin-bottom:8px}.lunch-operator-wrap input{width:100%;box-sizing:border-box;padding:12px;font-size:17px}.lunch-operator-wrap small{display:block;margin-top:7px}
 
 #attention-feedback.lunch-outside-hours{display:block!important;background:#fff3cd!important;color:#854d0e!important;border:3px solid #d97706!important;border-radius:14px!important;padding:20px!important;font-size:clamp(22px,3vw,34px)!important;line-height:1.25!important;font-weight:900!important;text-align:center!important}
+
+
+/* Upper navigation and consolidated administration */
+.top-actions{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.top-tabs{display:flex;gap:6px;padding:5px;border:1px solid #34546a;border-radius:12px;background:#101c2e}
+.top-tab{border:0;background:transparent;color:#c7d8eb;border-radius:8px;padding:11px 17px;font-weight:700}
+.top-tab.active{background:#22d3ee;color:#071321}
+#settings-view[hidden]{display:none!important}
+.settings-open .intro,.settings-open .stats,.settings-open .workspace{display:none!important}
+.settings-open #settings-view{display:grid;gap:18px;margin:20px 0}
+.settings-intro h2{margin:0 0 5px;font-size:28px}
+.settings-intro p{color:#a5b4ca}
+.settings-card{background:#17243a;border:1px solid #34546a;border-radius:16px;padding:20px}
+.settings-card h3{margin:0 0 12px}
+.settings-card details{padding:10px 0}
+.settings-card #early-config{display:grid;gap:10px}
+.settings-card #early-days{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
+.settings-card #early-days label{display:grid;gap:5px}
+.settings-card input:not([type=checkbox]),.settings-card select,.settings-card textarea{max-width:100%;background:#0e1a2c;color:#f2f8ff;border:1px solid #40526b;border-radius:9px;padding:10px}
+.settings-card button{margin:7px 0}
+.settings-open #student-admin{display:block!important}
+.settings-open #admin-content{display:block!important}
+@media(max-width:720px){.top-actions{width:100%}.top-tabs{width:100%}.top-tab{flex:1}.top{flex-wrap:wrap}}
