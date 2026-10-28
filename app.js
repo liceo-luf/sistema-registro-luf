@@ -82,7 +82,7 @@ function render(){document.body.className='theme-'+current;$('withdrawal-entry')
 function findWithdrawalStudent(){
  const input=$('withdrawal-rut'),feedback=$('withdrawal-feedback');
  const rut=input.value.toUpperCase().replace(/[^0-9K]/g,'');
- if(rut.length<7){feedback.textContent='Ingrese el RUT completo del estudiante.';input.focus();return}
+ if(input.value.trim().length<2){feedback.textContent='Ingrese RUT o nombre del estudiante.';input.focus();return}
  const student=students.find(s=>s.active!==false&&s.rut.toUpperCase().replace(/[^0-9K]/g,'')===rut);
  if(!student){feedback.textContent='No se encontró un estudiante activo con ese RUT.';input.focus();return}
  if(attentionPending&&!window.confirm('Hay un retiro sin confirmar. ¿Descartarlo?'))return;
