@@ -175,16 +175,16 @@ function attentionOpen(student,message){
  $('attention-verified').checked=false;
  $('attention-confirm').hidden=true;
  attentionPending=false;attentionAction='';
- const area=$('attention-actions');area.replaceChildren();$('lunch-operator-wrap').hidden=current!=='pases';$('lunch-operator').value='';$('attention-feedback').classList.remove('lunch-blocked');
+ const area=$('attention-actions');area.replaceChildren();$('lunch-operator-wrap').hidden=current!=='pases';$('lunch-operator').value='';$('attention-feedback').classList.remove('lunch-blocked','lunch-outside-hours');
  if(current==='pases'&&!lunchState().pending.has(student.id)&&!student.lunchPassAuthorized){$('attention-feedback').textContent='PASE NO DISPONIBLE — El estudiante no tiene el pase habilitado en el registro.';$('attention-feedback').classList.add('lunch-blocked')}
- if(current==='pases'&&!lunchState().pending.has(student.id)&&student.lunchPassAuthorized&&!lunchExitAllowed()){$('attention-feedback').textContent='FUERA DEL HORARIO DE SALIDA — Horario permitido: 13:55 a 14:55.';$('attention-feedback').classList.add('lunch-blocked')}
+ if(current==='pases'&&!lunchState().pending.has(student.id)&&student.lunchPassAuthorized&&!lunchExitAllowed()){$('attention-feedback').textContent='FUERA DEL HORARIO DE SALIDA — Horario permitido: 13:55 a 14:55.';$('attention-feedback').classList.add('lunch-outside-hours')}
  const actions=current==='atrasos'?[['Atraso habitual','Atraso'],['Ingreso con pase','Con pase'],['Justificación del apoderado','Justificado']]:current==='retiros'||current==='temprano'?[['Titular','Apoderado titular'],['Suplente','Apoderado suplente'],['Otro autorizado','Otro autorizado']]:current==='pases'?(lunchState().pending.has(student.id)?[['Regreso','Confirmar regreso']]:[['Salida','Autorizar salida']]):current==='almuerzo'?[['Almuerzo','Registrar almuerzo']]:[['Ingreso con pase','Con pase'],['Justificación del apoderado','Justificado'],['Sin justificación','Sin justificación']];
  for(const [value,label] of actions){
   const btn=el('button',label);btn.type='button';
   btn.addEventListener('click',()=>{
    if(current==='pases'&&value==='Salida'&&!student.lunchPassAuthorized){$('attention-feedback').textContent='PASE NO DISPONIBLE — El estudiante no tiene el pase habilitado en el registro.';$('attention-feedback').classList.add('lunch-blocked');$('attention-confirm').hidden=true;attentionPending=false;return}
-   if(current==='pases'&&value==='Salida'&&!lunchExitAllowed()){$('attention-feedback').textContent='FUERA DEL HORARIO DE SALIDA — Horario permitido: 13:55 a 14:55.';$('attention-feedback').classList.add('lunch-blocked');$('attention-confirm').hidden=true;attentionPending=false;return}
-   $('attention-feedback').classList.remove('lunch-blocked');attentionAction=value;
+   if(current==='pases'&&value==='Salida'&&!lunchExitAllowed()){$('attention-feedback').textContent='FUERA DEL HORARIO DE SALIDA — Horario permitido: 13:55 a 14:55.';$('attention-feedback').classList.add('lunch-outside-hours');$('attention-confirm').hidden=true;attentionPending=false;return}
+   $('attention-feedback').classList.remove('lunch-blocked','lunch-outside-hours');attentionAction=value;
    area.querySelectorAll('button').forEach(b=>b.classList.toggle('chosen',b===btn));
    if(current==='atrasos'){
     const passBtn=[...document.querySelectorAll('.pass-type-btn')].find(b=>b.dataset.passType===value);
