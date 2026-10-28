@@ -102,3 +102,6 @@ footer{color:#71869c}.tag{font-size:11px}
 #withdrawal-feedback{color:#ae3434;font-weight:700;min-height:22px}
 
 .withdrawal-matches[hidden]{display:none!important}.withdrawal-matches{width:min(600px,100%);display:flex;flex-direction:column;gap:8px}.withdrawal-matches button{width:100%;text-align:left;padding:13px 17px;border-radius:10px;background:#e9f3ff;color:#164978;border:1px solid #aaccec;font-weight:700;cursor:pointer}
+
+/* Withdrawal history: visible only in the withdrawals module */
+.withdrawal-history[hidden]{display:none!important}.theme-retiros .withdrawal-history .table-wrap{display:block!important;overflow-x:auto}.withdrawal-history{margin:20px 0 30px;border:1px solid #d5e5f5;border-radius:16px;padding:20px;background:#fff}.withdrawal-history-head h3{color:#153f6e;margin:0 0 6px;font-size:21px}.withdrawal-history-head p{font-size:13px;color:#66809a;margin:0 0 14px}.withdrawal-history td{white-space:normal;min-width:130px}.withdrawal-history td:last-child{min-width:230px}
