@@ -33,3 +33,50 @@ function switchView(name){
 registerTab.addEventListener('click',()=>switchView('register'));
 settingsTab.addEventListener('click',()=>switchView('settings'));
 switchView('register');
+// Approved visual layout: configuration menu with dedicated sections.
+const settingsCards=[
+ {id:'settings-key',label:'Clave administrativa',icon:'🔐',desc:'Crear o cambiar la clave de administración.'},
+ {id:'student-admin',label:'Estudiantes',icon:'👥',desc:'Nómina, cursos y credenciales QR.'},
+ {id:'settings-early',label:'Retiro temprano',icon:'🏃',desc:'Autorizaciones por día, vigencia e importación.'},
+ {id:'settings-tardy',label:'Horarios y atrasos',icon:'🕒',desc:'Jornada, tolerancia y alertas.'}
+];
+configSection.id='settings-tardy';
+const shell=document.createElement('div');shell.className='settings-shell';
+const side=document.createElement('nav');side.className='settings-sidebar';side.setAttribute('aria-label','Configuración');
+const content=document.createElement('div');content.className='settings-content';
+const intro=settingsView.querySelector('.settings-intro');
+settingsView.append(shell);shell.append(side,content);
+content.append(intro);
+for(const card of settingsCards){
+ const target=document.getElementById(card.id);
+ if(!target)continue;
+ const button=document.createElement('button');button.type='button';button.className='settings-nav-item';button.textContent=card.icon+'  '+card.label;button.dataset.target=card.id;
+ side.append(button);
+ const heading=document.createElement('div');heading.className='settings-card-heading';
+ heading.innerHTML='<span class="settings-card-icon" aria-hidden="true">'+card.icon+'</span><div><strong>'+card.label+'</strong><small>'+card.desc+'</small></div>';
+ if(target.id==='student-admin'){target.querySelector('.admin-heading')?.before(heading)}
+ else target.prepend(heading);
+ target.classList.add('settings-section');
+ content.append(target);
+ button.addEventListener('click',()=>selectSettings(card.id));
+}
+function selectSettings(id){
+ document.querySelectorAll('.settings-section').forEach(el=>el.hidden=el.id!==id);
+ document.querySelectorAll('.settings-nav-item').forEach(btn=>{const active=btn.dataset.target===id;btn.classList.toggle('active',active);btn.setAttribute('aria-current',active?'page':'false')});
+}
+const oldSwitch=switchView;
+switchView=function(name){oldSwitch(name);if(name==='settings')selectSettings(document.querySelector('.settings-nav-item.active')?.dataset.target||'settings-key')};
+selectSettings('settings-key');
+const settingsOverview=document.createElement('div');settingsOverview.className='settings-overview';
+const overviewTitle=document.createElement('h3');overviewTitle.textContent='Administración del sistema';
+settingsOverview.append(overviewTitle);
+const tiles=document.createElement('div');tiles.className='settings-tiles';
+settingsOverview.append(tiles);
+settingsCards.forEach(c=>{const btn=document.createElement('button');btn.type='button';btn.className='settings-tile';btn.innerHTML='<span class="settings-tile-icon">'+c.icon+'</span><strong>'+c.label+'</strong><small>'+c.desc+'</small>';btn.addEventListener('click',()=>selectSettings(c.id));tiles.append(btn)});
+content.insertBefore(settingsOverview,intro.nextSibling);
+const origSelect=selectSettings;
+selectSettings=function(id){origSelect(id);settingsOverview.hidden=id!=='overview'};
+const home=document.createElement('button');home.type='button';home.className='settings-nav-item';home.textContent='⌂  Inicio';home.addEventListener('click',()=>selectSettings('overview'));side.prepend(home);
+selectSettings('overview');
+settingsTab.addEventListener('click',()=>selectSettings('overview'));
+
