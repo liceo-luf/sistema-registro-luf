@@ -78,7 +78,19 @@ function dateKey(d){return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0
 function todayRecords(){const day=dateKey(new Date());return records.filter(r=>dateKey(new Date(r.at))===day)}
 function renderStats(){const today=todayRecords();const values=[['Movimientos hoy',today.length],['Atrasos hoy',today.filter(r=>r.module==='atrasos'&&r.passType!=='Ingreso con pase'&&r.passType!=='Justificación del apoderado').length],['Retiros hoy',today.filter(r=>r.module==='retiros'||r.module==='temprano').length],['Almuerzos hoy',today.filter(r=>r.module==='almuerzo').length]];$('stats').replaceChildren(...values.map(([label,value])=>{const card=el('div',undefined,'stat');card.append(el('small',label),el('strong',String(value)));return card}))}
 function renderModules(){$('modules').replaceChildren(...modules.map(([id,title,desc])=>{const btn=el('button',title,'module theme-'+id+(id===current?' active':''));btn.type='button';btn.append(el('span',desc));btn.addEventListener('click',()=>{current=id;selected=null;$('student-search').value='';$('reason').value='';$('exceptional').checked=false;$('selected').hidden=true;$('matches').replaceChildren();$('feedback').textContent='';render();if(current==='retiros')$('withdrawal-rut').focus({preventScroll:true})});return btn}))}
-function renderHistory(){const body=$('history');body.replaceChildren();const rows=records.filter(r=>r.module===current).slice().reverse().slice(0,20);if(!rows.length){const tr=el('tr');const td=el('td','Sin movimientos registrados en este módulo.');td.colSpan=5;tr.append(td);body.append(tr);return}for(const r of rows){const tr=el('tr');const s=students.find(x=>x.id===r.studentId);const values=[new Date(r.at).toLocaleString('es-CL'),s?s.name:'Desconocido',modules.find(m=>m[0]===r.module)?.[1]||r.module,r.type,r.reason||'—'];tr.append(...values.map(v=>el('td',v)));body.append(tr)}}
+function renderWithdrawalHistory(){
+ const section=$('withdrawal-history'),body=$('withdrawal-history-rows');
+ section.hidden=current!=='retiros';body.replaceChildren();
+ if(current!=='retiros')return;
+ const rows=records.filter(r=>r.module==='retiros').slice().reverse().slice(0,30);
+ if(!rows.length){const tr=el('tr'),td=el('td','Todavía no hay retiros registrados.');td.colSpan=4;tr.append(td);body.append(tr);return}
+ for(const r of rows){
+  const student=students.find(s=>s.id===r.studentId),tr=el('tr');
+  const values=[new Date(r.at).toLocaleString('es-CL'),student?.name||r.studentId,student?.course||'—',r.reason||'Sin datos del adulto'];
+  tr.append(...values.map(value=>el('td',value)));body.append(tr);
+ }
+}
+function renderHistory(){renderWithdrawalHistory();const body=$('history');body.replaceChildren();const rows=records.filter(r=>r.module===current).slice().reverse().slice(0,20);if(!rows.length){const tr=el('tr');const td=el('td','Sin movimientos registrados en este módulo.');td.colSpan=5;tr.append(td);body.append(tr);return}for(const r of rows){const tr=el('tr');const s=students.find(x=>x.id===r.studentId);const values=[new Date(r.at).toLocaleString('es-CL'),s?s.name:'Desconocido',modules.find(m=>m[0]===r.module)?.[1]||r.module,r.type,r.reason||'—'];tr.append(...values.map(v=>el('td',v)));body.append(tr)}}
 function render(){document.body.className='theme-'+current;$('withdrawal-entry').hidden=current!=='retiros';scanInput.disabled=current==='retiros';scanInput.placeholder=current==='retiros'?'QR desactivado en Retiros':'Escanea aquí: LUF-001';$('student-search').placeholder=current==='retiros'?'Ingrese RUT del estudiante (obligatorio)':'Buscar estudiante por nombre, RUT o código QR';renderModules();const m=modules.find(x=>x[0]===current);$('module-title').textContent=m[1];$('module-desc').textContent=m[2];renderStats();renderHistory();$('tardy-counter').hidden=current!=='atrasos';updateTardySummary()}
 function findWithdrawalStudent(){
  const input=$('withdrawal-rut'),feedback=$('withdrawal-feedback');
