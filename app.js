@@ -83,8 +83,8 @@ function findWithdrawalStudent(){
  const input=$('withdrawal-rut'),feedback=$('withdrawal-feedback');
  const rut=input.value.toUpperCase().replace(/[^0-9K]/g,'');
  if(input.value.trim().length<2){feedback.textContent='Ingrese RUT o nombre del estudiante.';input.focus();return}
- const student=students.find(s=>s.active!==false&&s.rut.toUpperCase().replace(/[^0-9K]/g,'')===rut);
- if(!student){feedback.textContent='No se encontró un estudiante activo con ese RUT.';input.focus();return}
+ const matches=students.filter(s=>s.active!==false&&(s.rut.toUpperCase().replace(/[^0-9K]/g,'')===rut||s.name.toLocaleLowerCase('es-CL').includes(input.value.trim().toLocaleLowerCase('es-CL'))));const student=matches.length===1?matches[0]:null;
+ if(!student){feedback.textContent=matches.length>1?'Hay varios estudiantes con ese nombre. Escribe más letras para identificarlo.':'No se encontró un estudiante activo con esos datos.';input.focus();return}
  if(attentionPending&&!window.confirm('Hay un retiro sin confirmar. ¿Descartarlo?'))return;
  choose(student);attentionOpen(student,'Estudiante identificado mediante RUT ingresado por funcionario.');
  feedback.textContent='';input.value='';
