@@ -90,6 +90,7 @@ function renderWithdrawalHistory(){
   tr.append(...values.map(value=>el('td',value)));body.append(tr);
  }
 }
+function lunchExitAllowed(){const now=new Date(),minute=now.getHours()*60+now.getMinutes();return minute>=13*60+55&&minute<=14*60+55}
 function lunchState(){
  const day=todayRecords().filter(r=>r.module==='pases');
  const pending=new Map();
@@ -100,6 +101,7 @@ function renderLunchControl(){
  const section=$('lunch-control');section.hidden=current!=='pases';
  if(current!=='pases')return;
  const {day,pending}=lunchState();
+ const notice=section.querySelector('.lunch-hours-notice');if(notice){notice.textContent=lunchExitAllowed()?'Horario de salida habilitado: 13:55 a 14:55.':'Fuera del horario de salida (13:55 a 14:55). Los regresos siguen habilitados.'}
  const summary=$('lunch-summary');summary.replaceChildren();
  for(const [label,value] of [['Salidas del día',day.filter(r=>r.type==='Salida').length],['Regresos',day.filter(r=>r.type==='Regreso').length],['Estudiantes fuera',pending.size]]){
   const box=el('div',undefined,'lunch-stat');box.append(el('small',label),el('strong',String(value)));summary.append(box);
@@ -149,7 +151,7 @@ if(current==='atrasos'){
  if(needsExceptional&&!exceptional){feedback.textContent='Fuera del horario normal: marca Registro excepcional e indica el motivo.';feedback.className='error';return}
  if(needsExceptional&&!reason){feedback.textContent='El atraso excepcional requiere motivo.';feedback.className='error';return}
 }
-if(current==='pases'){const pending=lunchState().pending.has(selected.id);if(!attentionPending||!attentionAction){feedback.textContent='Confirma la salida o el regreso desde la pantalla de atención.';feedback.className='error';return}if((attentionAction==='Salida'&&pending)||(attentionAction==='Regreso'&&!pending)){feedback.textContent='El estado del estudiante cambió. Vuelve a verificarlo.';feedback.className='error';return}type=attentionAction}const record={id:globalThis.crypto?.randomUUID?.()||String(Date.now())+'-'+Math.random(),at:new Date().toISOString(),module:current,studentId:selected.id,type,reason};records.push(record);if(!persist()){records.pop();feedback.textContent='No se pudo guardar el registro en este navegador.';feedback.className='error';return}feedback.textContent='Movimiento registrado correctamente (solo en este navegador).';$('reason').value='';$('exceptional').checked=false;renderStats();renderHistory();updateTardySummary();refreshTardyPass();if(current==='atrasos'&&tardyMonthly(selected.id).length>=tardySettings.alert)feedback.textContent+=' ⚠ Umbral mensual de atrasos alcanzado.'});
+if(current==='pases'){const pending=lunchState().pending.has(selected.id);if(attentionAction==='Salida'&&!lunchExitAllowed()){feedback.textContent='Salida bloqueada: el horario de almuerzo es de 13:55 a 14:55. El regreso sí puede registrarse fuera de ese horario.';feedback.className='error';return}if(!attentionPending||!attentionAction){feedback.textContent='Confirma la salida o el regreso desde la pantalla de atención.';feedback.className='error';return}if((attentionAction==='Salida'&&pending)||(attentionAction==='Regreso'&&!pending)){feedback.textContent='El estado del estudiante cambió. Vuelve a verificarlo.';feedback.className='error';return}type=attentionAction}const record={id:globalThis.crypto?.randomUUID?.()||String(Date.now())+'-'+Math.random(),at:new Date().toISOString(),module:current,studentId:selected.id,type,reason};records.push(record);if(!persist()){records.pop();feedback.textContent='No se pudo guardar el registro en este navegador.';feedback.className='error';return}feedback.textContent='Movimiento registrado correctamente (solo en este navegador).';$('reason').value='';$('exceptional').checked=false;renderStats();renderHistory();updateTardySummary();refreshTardyPass();if(current==='atrasos'&&tardyMonthly(selected.id).length>=tardySettings.alert)feedback.textContent+=' ⚠ Umbral mensual de atrasos alcanzado.'});
 function csvCell(v){return '"'+String(v??'').replaceAll('"','""')+'"'}
 $('export').addEventListener('click',()=>{const rows=[['Fecha y hora','Código','Estudiante','Curso','Módulo','Tipo','Observación'],...records.filter(r=>r.module===current).map(r=>{const s=students.find(x=>x.id===r.studentId);return [new Date(r.at).toLocaleString('es-CL'),r.studentId,s?.name||'',s?.course||'',r.module,r.type,r.reason]})];const csv='\uFEFF'+rows.map(row=>row.map(csvCell).join(';')).join('\r\n');const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='luf-'+current+'-'+dateKey(new Date())+'.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)});
 $('reset').addEventListener('click',()=>{if(!confirm('¿Eliminar todos los movimientos ficticios guardados en este navegador?'))return;records=[];localStorage.removeItem(key);$('feedback').textContent='Datos de prueba restablecidos.';render()});
@@ -174,6 +176,7 @@ function attentionOpen(student,message){
  $('attention-confirm').hidden=true;
  attentionPending=false;attentionAction='';
  const area=$('attention-actions');area.replaceChildren();
+ if(current==='pases'&&!lunchState().pending.has(student.id)&&!lunchExitAllowed())$('attention-feedback').textContent='Fuera del horario de almuerzo (13:55 a 14:55): no se puede autorizar la salida.';
  const actions=current==='atrasos'?[['Atraso habitual','Atraso'],['Ingreso con pase','Con pase'],['Justificación del apoderado','Justificado']]:current==='retiros'||current==='temprano'?[['Titular','Apoderado titular'],['Suplente','Apoderado suplente'],['Otro autorizado','Otro autorizado']]:current==='pases'?(lunchState().pending.has(student.id)?[['Regreso','Confirmar regreso']]:[['Salida','Autorizar salida']]):current==='almuerzo'?[['Almuerzo','Registrar almuerzo']]:[['Ingreso con pase','Con pase'],['Justificación del apoderado','Justificado'],['Sin justificación','Sin justificación']];
  for(const [value,label] of actions){
   const btn=el('button',label);btn.type='button';
