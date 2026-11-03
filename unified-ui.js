@@ -26,6 +26,11 @@
  const historyLink=document.createElement('button');historyLink.type='button';historyLink.className='luf-history-link';historyLink.textContent='Ver historial completo ↗';
  recentTitle.append(recentName,historyLink);
  right.append(recentTitle,historyTable,historyHead);
+ // Keep module-specific monitoring inside the same right-hand activity column.
+ const lunchControl=$('lunch-control');
+ const withdrawalHistory=$('withdrawal-history');
+ if(lunchControl)right.append(lunchControl);
+ if(withdrawalHistory)right.append(withdrawalHistory);
  layout.append(left,right);
  panel.insertBefore(layout,panel.querySelector('.history-head'));
  const exception=document.createElement('div');exception.className='luf-special-action';exception.hidden=true;
@@ -77,6 +82,9 @@
  function refreshView(){
  const module=modules.find(m=>m[0]===current);if(!module)return;
  recentName.textContent='Últimos registros de '+module[1].toLowerCase();
+ // Preserve the module's own history and lunch-control visibility rules.
+ if(withdrawalHistory)withdrawalHistory.hidden=current!=='retiros';
+ if(lunchControl)lunchControl.hidden=current!=='pases';
  notice.textContent='ⓘ  Importante     '+moduleNotes[current];
  exceptionTitle.textContent=manual[current][0];exceptionDesc.textContent=manual[current][1];
  exception.hidden=current!=='retiros'&&current!=='temprano';
