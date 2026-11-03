@@ -206,3 +206,28 @@ body.settings-open .dashboard-home,body.dashboard-detail .dashboard-home{display
 .brand strong{color:#fff!important}.brand small{color:#e4f0fc!important}.demo{background:#ffffff15;color:#fff!important}
 @media(max-width:1150px){.dashboard-module-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:720px){.dashboard-module-grid,.dashboard-bottom{grid-template-columns:1fr}.dashboard-hero{align-items:flex-start;flex-direction:column}.dashboard-time{text-align:left}.dashboard-module-head{min-height:auto}}
+
+
+/* Retiro temprano: vista operativa amplia, consistente con los otros módulos */
+body.dashboard-detail.theme-temprano .workspace{grid-template-columns:minmax(0,1fr);max-width:1450px;margin-inline:auto}
+body.dashboard-detail.theme-temprano .modules{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+body.dashboard-detail.theme-temprano .modules .module{padding:13px 10px;font-size:13px}
+body.dashboard-detail.theme-temprano .modules .module span{font-size:11px}
+body.dashboard-detail.theme-temprano .panel{width:100%;max-width:none}
+body.dashboard-detail.theme-temprano #early-panel{display:block;max-width:none;width:100%;background:#fff7ed;border:1px solid #f5c98d!important;border-left:5px solid #ed850e!important;border-radius:16px!important;padding:24px!important;margin:20px 0!important}
+body.dashboard-detail.theme-temprano #early-panel h3{font-size:clamp(23px,2.5vw,32px);color:#9a4d07;margin:0 0 16px}
+body.dashboard-detail.theme-temprano #early-panel>label{display:block;font-size:17px;color:#173d64;margin-bottom:14px}
+body.dashboard-detail.theme-temprano #early-operator{display:block;width:100%;max-width:650px;margin-top:8px;padding:16px;font-size:19px;background:white;color:#183858;border:2px solid #e7a44d}
+body.dashboard-detail.theme-temprano #early-panel details{background:#fff;border:1px solid #f1d8b7;border-radius:12px;padding:16px 20px;margin-top:14px}
+body.dashboard-detail.theme-temprano #early-panel summary{font-size:19px;font-weight:800;color:#173b63;cursor:pointer}
+body.dashboard-detail.theme-temprano #early-panel textarea{min-height:100px;background:#fff;color:#183858;border:1px solid #c8d8e7;margin:10px 0}
+body.dashboard-detail.theme-temprano #early-exception{background:#e78210;color:#fff;font-weight:800;padding:15px 22px;font-size:17px}
+body.dashboard-detail.theme-temprano #early-panel details:first-of-type{display:none}
+body.dashboard-detail.theme-temprano #movement-form #reason,body.dashboard-detail.theme-temprano #movement-form label[for="reason"],body.dashboard-detail.theme-temprano #movement-form .form-row{display:none!important}
+body.dashboard-detail.theme-temprano .scanner-box{padding:24px;border:2px solid #e9a34c;background:#fff9f1}
+body.dashboard-detail.theme-temprano .scanner-heading strong{font-size:22px;color:#a95a0a}
+body.dashboard-detail.theme-temprano #scan-input{font-size:22px;padding:20px;border-color:#e78210!important}
+body.dashboard-detail.theme-temprano #student-search{font-size:18px;padding:17px}
+body.dashboard-detail.theme-temprano .scan-help{font-size:13px}
+@media(max-width:950px){body.dashboard-detail.theme-temprano .modules{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:600px){body.dashboard-detail.theme-temprano .modules{grid-template-columns:repeat(2,minmax(0,1fr))}body.dashboard-detail.theme-temprano #early-panel{padding:16px!important}body.dashboard-detail.theme-temprano .scanner-box{padding:15px}}
