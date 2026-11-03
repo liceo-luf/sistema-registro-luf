@@ -319,3 +319,18 @@ body.dashboard-detail.theme-retiros .luf-activity-card .luf-recent-heading + .ta
 body.dashboard-detail .luf-activity-card .luf-recent-heading{margin-top:0}
 body.dashboard-detail .luf-activity-card .withdrawal-history-head p{font-size:12px;color:#56708a}
 @media(max-width:760px){body.dashboard-detail .luf-activity-card #lunch-summary{grid-template-columns:1fr}}
+
+
+/* Protected configuration entrance */
+.settings-access-gate[hidden]{display:none!important}
+.settings-access-gate{min-height:calc(100vh - 170px);display:grid;place-items:center;padding:35px 15px}
+.settings-access-form{width:min(100%,470px);background:#fff;border:1px solid #d4e2f2;border-radius:18px;box-shadow:0 12px 36px #0e35631a;padding:34px;display:flex;flex-direction:column;gap:14px;color:#14365d}
+.settings-access-symbol{margin:auto;background:#e9f2ff;width:78px;height:78px;border-radius:50%;display:grid;place-items:center;font-size:35px}
+.settings-access-form h2{text-align:center;margin:4px 0 0;font-size:27px}
+.settings-access-form>p:not(#settings-access-error){text-align:center;color:#536f8e;margin:0 0 8px;line-height:1.5}
+.settings-access-form label{font-weight:750;font-size:14px}
+.settings-access-form input{padding:15px;border:1px solid #bdd0e6;border-radius:10px;font-size:17px;width:100%;box-sizing:border-box}
+.settings-access-form button{padding:14px;font-weight:750;border-radius:9px}
+#settings-access-error{color:#b42318;font-size:13px;margin:0;min-height:1em}
+body.settings-open #settings-view[hidden]{display:none!important}
+body.settings-open .settings-access-gate:not([hidden])~.workspace{display:none!important}
