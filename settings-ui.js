@@ -74,9 +74,65 @@ switchView('register');
 const settingsCards=[
  {id:'settings-key',label:'Clave administrativa',icon:'🔐',desc:'Crear o cambiar la clave de administración.'},
  {id:'student-admin',label:'Estudiantes',icon:'👥',desc:'Nómina, cursos y credenciales QR.'},
+ {id:'settings-lunch',label:'Pases de almuerzo',icon:'🎫',desc:'Buscar, habilitar y deshabilitar autorizaciones individuales o por curso.'},
  {id:'settings-early',label:'Retiro temprano',icon:'🏃',desc:'Autorizaciones por día, vigencia e importación.'},
  {id:'settings-tardy',label:'Horarios y atrasos',icon:'🕒',desc:'Jornada, tolerancia y alertas.'}
 ];
+// Dedicated lunch-pass authorization panel; uses the existing student roster and saveRoster().
+const lunchAdmin=document.createElement('section');
+lunchAdmin.id='settings-lunch';lunchAdmin.className='settings-card';
+lunchAdmin.innerHTML=`<div class="luf-pass-toolbar"><label>Buscar estudiante<input id="luf-pass-search" type="search" placeholder="Nombre, RUT o identificador"></label><label>Curso<select id="luf-pass-course"><option value="">Todos los cursos</option></select></label><label>Estado<select id="luf-pass-status"><option value="">Todos</option><option value="yes">Autorizados</option><option value="no">Sin autorización</option></select></label></div><div class="luf-pass-summary" id="luf-pass-summary"></div><div class="luf-pass-bulk"><label><input id="luf-pass-select-all" type="checkbox"> Seleccionar estudiantes visibles</label><span id="luf-pass-selected-count">0 seleccionados</span><button type="button" class="secondary" id="luf-pass-enable">Autorizar seleccionados</button><button type="button" class="secondary" id="luf-pass-disable">Desautorizar seleccionados</button></div><p class="luf-pass-note">Los permisos se aplican al registro existente. El horario y el control de salida y regreso no cambian.</p><p id="luf-pass-feedback" role="status" aria-live="polite"></p><div class="table-wrap"><table><thead><tr><th>Seleccionar</th><th>Estudiante</th><th>Curso</th><th>RUT</th><th>Autorización</th><th>Acción</th></tr></thead><tbody id="luf-pass-rows"></tbody></table></div>`;
+settingsView.append(lunchAdmin);
+const passSelected=new Set();
+const passSearch=lunchAdmin.querySelector('#luf-pass-search'),passCourse=lunchAdmin.querySelector('#luf-pass-course'),passStatus=lunchAdmin.querySelector('#luf-pass-status');
+const passRows=lunchAdmin.querySelector('#luf-pass-rows'),passFeedback=lunchAdmin.querySelector('#luf-pass-feedback');
+const passSelectAll=lunchAdmin.querySelector('#luf-pass-select-all');
+function passFiltered(){
+ const query=passSearch.value.trim().toLocaleLowerCase('es-CL');
+ return students.filter(st=>st.active!==false&&(!passCourse.value||st.course===passCourse.value)&&(!passStatus.value||(passStatus.value==='yes')===!!st.lunchPassAuthorized)&&(!query||[st.name,st.rut,st.id].some(x=>String(x||'').toLocaleLowerCase('es-CL').includes(query))));
+}
+function passUpdate(ids,enabled){
+ if(!settingsUnlocked)return;
+ const targets=students.filter(st=>ids.includes(st.id)&&st.active!==false&&!!st.lunchPassAuthorized!==enabled);
+ if(!targets.length){passFeedback.textContent='No hay autorizaciones que modificar.';return}
+ if(!confirm((enabled?'Autorizar':'Desautorizar')+' pase de almuerzo para '+targets.length+' estudiante(s)?'))return;
+ const previous=targets.map(st=>[st,st.lunchPassAuthorized]);
+ targets.forEach(st=>{st.lunchPassAuthorized=enabled});
+ if(!saveRoster()){previous.forEach(([st,old])=>{st.lunchPassAuthorized=old});passFeedback.textContent='No se pudieron guardar los cambios.';return}
+ passSelected.clear();
+ passFeedback.textContent=(enabled?'Autorizaciones activadas: ':'Autorizaciones desactivadas: ')+targets.length+'.';
+ renderPassAdmin();
+ if(typeof renderRoster==='function')renderRoster();
+}
+function renderPassAdmin(){
+ const courses=[...new Set(students.filter(st=>st.active!==false).map(st=>st.course))].sort((a,b)=>a.localeCompare(b,'es',{numeric:true}));
+ const oldCourse=passCourse.value;
+ passCourse.replaceChildren(new Option('Todos los cursos',''));
+ courses.forEach(c=>passCourse.add(new Option(c,c)));
+ passCourse.value=courses.includes(oldCourse)?oldCourse:'';
+ const visible=passFiltered(),active=students.filter(st=>st.active!==false);
+ lunchAdmin.querySelector('#luf-pass-summary').textContent=active.filter(st=>st.lunchPassAuthorized).length+' autorizados de '+active.length+' estudiantes activos · '+visible.length+' resultados visibles';
+ passRows.replaceChildren();
+ for(const st of visible){
+  const tr=document.createElement('tr');
+  const tdCheck=document.createElement('td'),check=document.createElement('input');check.type='checkbox';check.checked=passSelected.has(st.id);check.setAttribute('aria-label','Seleccionar '+st.name);check.addEventListener('change',()=>{if(check.checked)passSelected.add(st.id);else passSelected.delete(st.id);passSelectionSummary()});tdCheck.append(check);tr.append(tdCheck);
+  for(const value of [st.name,st.course,st.rut,st.lunchPassAuthorized?'Autorizado':'Sin autorización']){const td=document.createElement('td');td.textContent=value;tr.append(td)}
+  const actionCell=document.createElement('td'),button=document.createElement('button');button.type='button';button.className='secondary';button.textContent=st.lunchPassAuthorized?'Desautorizar':'Autorizar';button.addEventListener('click',()=>passUpdate([st.id],!st.lunchPassAuthorized));actionCell.append(button);tr.append(actionCell);passRows.append(tr);
+ }
+ passSelectionSummary();
+}
+function passSelectionSummary(){
+ const visible=passFiltered();
+ const selected=visible.filter(st=>passSelected.has(st.id)).length;
+ lunchAdmin.querySelector('#luf-pass-selected-count').textContent=selected+' seleccionados';
+ passSelectAll.checked=visible.length>0&&selected===visible.length;
+ passSelectAll.indeterminate=selected>0&&selected<visible.length;
+}
+for(const control of [passSearch,passCourse,passStatus])control.addEventListener(control===passSearch?'input':'change',()=>{passSelected.clear();renderPassAdmin()});
+passSelectAll.addEventListener('change',()=>{passFiltered().forEach(st=>{if(passSelectAll.checked)passSelected.add(st.id);else passSelected.delete(st.id)});renderPassAdmin()});
+lunchAdmin.querySelector('#luf-pass-enable').addEventListener('click',()=>passUpdate([...passSelected],true));
+lunchAdmin.querySelector('#luf-pass-disable').addEventListener('click',()=>passUpdate([...passSelected],false));
+
 configSection.id='settings-tardy';
 const shell=document.createElement('div');shell.className='settings-shell';
 const side=document.createElement('nav');side.className='settings-sidebar';side.setAttribute('aria-label','Configuración');
@@ -102,7 +158,7 @@ function selectSettings(id){
  document.querySelectorAll('.settings-nav-item').forEach(btn=>{const active=btn.dataset.target===id;btn.classList.toggle('active',active);btn.setAttribute('aria-current',active?'page':'false')});
 }
 const oldSwitch=switchView;
-switchView=function(name){oldSwitch(name);if(name==='settings'&&settingsUnlocked)selectSettings(document.querySelector('.settings-nav-item.active')?.dataset.target||'settings-key')};
+switchView=function(name){oldSwitch(name);if(name==='settings'&&settingsUnlocked){renderPassAdmin();selectSettings(document.querySelector('.settings-nav-item.active')?.dataset.target||'settings-key')};}
 selectSettings('settings-key');
 const settingsOverview=document.createElement('div');settingsOverview.className='settings-overview';
 const overviewTitle=document.createElement('h3');overviewTitle.textContent='Administración del sistema';
