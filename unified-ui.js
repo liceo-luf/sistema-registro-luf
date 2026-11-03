@@ -36,7 +36,8 @@
  const notice=document.createElement('div');notice.className='luf-module-notice';notice.setAttribute('role','note');
  panel.append(notice);
  const counter=document.createElement('section');counter.className='luf-side-counter';counter.innerHTML='<div class="luf-side-counter-head"><strong>Resumen de hoy</strong><span aria-hidden="true">▥</span></div><div class="luf-side-counter-body"><small>Movimientos registrados</small><strong id="luf-total-count">0</strong><small id="luf-counter-date"></small><div class="luf-count-grid"><div class="luf-count-item late"><span>Atrasos</span><b id="luf-late-count">0</b></div><div class="luf-count-item retire"><span>Retiros</span><b id="luf-retire-count">0</b></div><div class="luf-count-item passes"><span>Pases</span><b id="luf-pass-count">0</b></div><div class="luf-count-item other"><span>Otros</span><b id="luf-other-count">0</b></div></div><button type="button" id="luf-stat-link">Ver estadísticas ↗</button></div>';
- modulesNav.after(counter);
+ const sidebar=document.createElement('aside');sidebar.className='luf-operation-sidebar';
+ modulesNav.before(sidebar);sidebar.append(modulesNav,counter);
  const moduleNotes={
  atrasos:'Los atrasos se registran de acuerdo con los horarios y las reglas configuradas.',
  retiros:'El retiro requiere verificar al adulto responsable y registrar sus datos.',
