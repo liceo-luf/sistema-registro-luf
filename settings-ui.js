@@ -133,6 +133,45 @@ passSelectAll.addEventListener('change',()=>{passFiltered().forEach(st=>{if(pass
 lunchAdmin.querySelector('#luf-pass-enable').addEventListener('click',()=>passUpdate([...passSelected],true));
 lunchAdmin.querySelector('#luf-pass-disable').addEventListener('click',()=>passUpdate([...passSelected],false));
 
+// Search and course filtering for existing early-departure authorizations.
+const earlyTools=document.createElement('div');earlyTools.className='luf-early-admin-tools';
+earlyTools.innerHTML='<label>Buscar estudiante<input id="luf-early-search" type="search" placeholder="Nombre, RUT o código"></label><label>Curso<select id="luf-early-course"><option value="">Todos los cursos</option></select></label><label>Estado<select id="luf-early-status"><option value="">Todos</option><option value="enabled">Con pase habilitado</option><option value="disabled">Sin pase habilitado</option></select></label><p id="luf-early-results" aria-live="polite"></p><div id="luf-early-list" class="luf-early-list"></div>';
+const earlyTarget=document.getElementById('settings-early');
+earlyTarget.append(earlyTools);
+const earlySearch=earlyTools.querySelector('#luf-early-search'),earlyCourse=earlyTools.querySelector('#luf-early-course'),earlyStatus=earlyTools.querySelector('#luf-early-status');
+function refreshEarlyTools(){
+ const old=earlyCourse.value;
+ const courses=[...new Set(students.filter(st=>st.active!==false).map(st=>st.course))].sort((a,b)=>a.localeCompare(b,'es',{numeric:true}));
+ earlyCourse.replaceChildren(new Option('Todos los cursos',''));
+ courses.forEach(course=>earlyCourse.add(new Option(course,course)));
+ earlyCourse.value=courses.includes(old)?old:'';
+ const query=earlySearch.value.trim().toLocaleLowerCase('es-CL');
+ const filtered=students.filter(st=>{
+  if(st.active===false||earlyCourse.value&&st.course!==earlyCourse.value)return false;
+  if(query&&![st.name,st.rut,st.id].some(v=>String(v||'').toLocaleLowerCase('es-CL').includes(query)))return false;
+  const p=earlyPasses[st.id],enabled=!!p&&p.active!==false&&p.days?.some(Boolean);
+  return !earlyStatus.value||(earlyStatus.value==='enabled'?enabled:!enabled);
+ });
+ earlyTools.querySelector('#luf-early-results').textContent=filtered.length+' estudiantes encontrados';
+ const list=earlyTools.querySelector('#luf-early-list');list.replaceChildren();
+ for(const st of filtered){
+  const p=earlyPasses[st.id],enabled=!!p&&p.active!==false&&p.days?.some(Boolean);
+  const row=document.createElement('div');row.className='luf-early-list-row';
+  const description=document.createElement('span');description.textContent=st.name+' · '+st.course+' · '+(enabled?'Pase habilitado':'Sin pase habilitado');
+  const button=document.createElement('button');button.type='button';button.className='secondary';button.textContent='Administrar pase';
+  button.addEventListener('click',()=>{
+   const select=document.getElementById('early-student');
+   select.value=st.id;
+   select.dispatchEvent(new Event('change',{bubbles:true}));
+   earlyAdminDetails.open=true;
+   earlyAdminDetails.scrollIntoView({behavior:'smooth',block:'nearest'});
+  });
+  row.append(description,button);list.append(row);
+ }
+}
+for(const control of [earlySearch,earlyCourse,earlyStatus])control.addEventListener(control===earlySearch?'input':'change',refreshEarlyTools);
+document.getElementById('early-save').addEventListener('click',()=>setTimeout(refreshEarlyTools,0));
+
 configSection.id='settings-tardy';
 const shell=document.createElement('div');shell.className='settings-shell';
 const side=document.createElement('nav');side.className='settings-sidebar';side.setAttribute('aria-label','Configuración');
@@ -158,7 +197,7 @@ function selectSettings(id){
  document.querySelectorAll('.settings-nav-item').forEach(btn=>{const active=btn.dataset.target===id;btn.classList.toggle('active',active);btn.setAttribute('aria-current',active?'page':'false')});
 }
 const oldSwitch=switchView;
-switchView=function(name){oldSwitch(name);if(name==='settings'&&settingsUnlocked){renderPassAdmin();selectSettings(document.querySelector('.settings-nav-item.active')?.dataset.target||'settings-key')};}
+switchView=function(name){oldSwitch(name);if(name==='settings'&&settingsUnlocked){renderPassAdmin();refreshEarlyTools();selectSettings(document.querySelector('.settings-nav-item.active')?.dataset.target||'settings-key')};}
 selectSettings('settings-key');
 const settingsOverview=document.createElement('div');settingsOverview.className='settings-overview';
 const overviewTitle=document.createElement('h3');overviewTitle.textContent='Administración del sistema';
