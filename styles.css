@@ -334,3 +334,18 @@ body.dashboard-detail .luf-activity-card .withdrawal-history-head p{font-size:12
 #settings-access-error{color:#b42318;font-size:13px;margin:0;min-height:1em}
 body.settings-open #settings-view[hidden]{display:none!important}
 body.settings-open .settings-access-gate:not([hidden])~.workspace{display:none!important}
+
+
+/* Configuración > Pases de almuerzo */
+#settings-lunch .luf-pass-toolbar{display:grid;grid-template-columns:minmax(180px,2fr) repeat(2,minmax(135px,1fr));gap:12px;margin:18px 0}
+#settings-lunch .luf-pass-toolbar label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:700}
+#settings-lunch .luf-pass-toolbar input,#settings-lunch .luf-pass-toolbar select{width:100%;min-width:0;box-sizing:border-box;border:1px solid #c7d7e8;border-radius:9px;padding:11px;background:white}
+#settings-lunch .luf-pass-summary{padding:12px 14px;background:#edf5ff;border-radius:10px;font-weight:700;color:#234c78}
+#settings-lunch .luf-pass-bulk{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:15px 0}
+#settings-lunch .luf-pass-bulk label{display:flex;align-items:center;gap:7px}
+#settings-lunch .luf-pass-note{color:#56708a;font-size:13px}
+#settings-lunch #luf-pass-feedback{font-weight:650;color:#234c78;min-height:1em}
+#settings-lunch .table-wrap{overflow-x:auto}
+#settings-lunch table{width:100%;min-width:620px}
+#settings-lunch td,#settings-lunch th{padding:10px;text-align:left}
+@media(max-width:700px){#settings-lunch .luf-pass-toolbar{grid-template-columns:1fr}}
