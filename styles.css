@@ -221,3 +221,71 @@ body.dashboard-detail.theme-temprano #early-panel input,body.dashboard-detail.th
 #attention-name{font-size:clamp(32px,4.5vw,56px);line-height:1.1;overflow-wrap:anywhere}
 #attention-course{font-size:clamp(19px,2.5vw,28px)}
 #attention-feedback.early-success{display:block!important;background:#e4f8ed!important;color:#126238!important;border:3px solid #19a566!important;border-radius:14px!important;padding:18px!important;font-size:clamp(20px,3vw,30px)!important;font-weight:850!important;text-align:center!important}
+
+
+/* LUF approved unified operation pages */
+body.dashboard-detail main{max-width:none;padding:22px clamp(15px,2vw,35px)}
+body.dashboard-detail .intro,body.dashboard-detail .stats{display:none!important}
+body.dashboard-detail .workspace{display:grid;grid-template-columns:245px minmax(0,1fr);gap:22px;max-width:none;align-items:start}
+body.dashboard-detail .modules{display:flex;flex-direction:column;gap:8px}
+body.dashboard-detail .modules .module{width:100%;min-height:55px;padding:13px 15px;border:1px solid #dce7f2;border-left:4px solid transparent;border-radius:11px;background:#fff;box-shadow:0 2px 8px #12365b0a;color:#17375c}
+body.dashboard-detail .modules .module.active{background:#e4efff;color:#0758bd;border-left-color:#126de0;border-top-color:#dce7f2;border-right-color:#dce7f2;border-bottom-color:#dce7f2}
+body.dashboard-detail .modules .module span{display:none}
+body.dashboard-detail .workspace>.panel{padding:0;background:transparent;border:0;box-shadow:none;min-width:0}
+body.dashboard-detail .panel-head{padding:8px 0 20px;border:0}
+body.dashboard-detail .panel-head .eyebrow{display:none}
+body.dashboard-detail .panel-head h2{font-size:clamp(27px,3vw,38px);margin:0 0 5px;color:#102e53}
+body.dashboard-detail .panel-head p{font-size:16px;color:#435e7d;margin:0}
+body.dashboard-detail .panel-head .tag{display:none}
+body.dashboard-detail .luf-operation-layout{display:grid;grid-template-columns:minmax(320px,1fr) minmax(350px,1.18fr);gap:16px;align-items:start}
+body.dashboard-detail .luf-scan-card,body.dashboard-detail .luf-activity-card{background:#fff;border:1px solid #d6e3f1;border-radius:15px;padding:16px;min-width:0;box-shadow:0 3px 10px #15365b0a}
+body.dashboard-detail .luf-input-tabs{display:grid;grid-template-columns:1fr 1fr;gap:7px;background:#edf4fc;border-radius:10px;padding:5px;margin-bottom:15px}
+body.dashboard-detail .luf-input-tab{border:0;background:transparent;color:#17416c;padding:13px 8px;border-radius:9px;font-weight:750}
+body.dashboard-detail .luf-input-tab.active{background:#103e75;color:#fff}
+body.dashboard-detail .luf-input-tab:disabled{opacity:.5;cursor:not-allowed}
+body.dashboard-detail .luf-qr-pane[hidden],body.dashboard-detail .luf-search-pane[hidden]{display:none!important}
+body.dashboard-detail .scanner-box{border:0!important;border-radius:13px;background:#eef5ff!important;padding:25px 18px!important;box-shadow:none}
+body.dashboard-detail .scanner-heading{display:flex;align-items:center;justify-content:center}
+body.dashboard-detail .scanner-heading strong{font-size:18px;color:#123f75}
+body.dashboard-detail .scanner-box>p{color:#54708d;text-align:center}
+body.dashboard-detail .scanner-box .scan-row{display:flex;gap:8px}
+body.dashboard-detail .scanner-box input{background:#fff;color:#15385e;min-width:0}
+body.dashboard-detail .recent-scans{margin-top:14px}
+body.dashboard-detail .luf-recent-heading{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:4px 0 15px}
+body.dashboard-detail .luf-recent-heading h3{font-size:19px;color:#143b66;margin:0}
+body.dashboard-detail .luf-history-link{border:0;background:none;color:#126de0;font-weight:750;font-size:12px}
+body.dashboard-detail .luf-activity-card .table-wrap{overflow:auto}
+body.dashboard-detail .luf-activity-card table{width:100%}
+body.dashboard-detail .luf-activity-card th{background:#eef3f9;color:#385675}
+body.dashboard-detail .luf-activity-card th,body.dashboard-detail .luf-activity-card td{font-size:12px;padding:12px 9px}
+body.dashboard-detail .luf-activity-card .history-head{margin-top:16px;border-top:1px solid #e1eaf3;padding-top:12px}
+body.dashboard-detail .luf-activity-card .history-head h3{display:none}
+body.dashboard-detail .luf-special-action{display:flex;align-items:center;flex-wrap:wrap;gap:8px;background:#f4f8fe;border:1px solid #dce8f5;border-radius:11px;padding:15px;margin-bottom:16px}
+body.dashboard-detail .luf-special-action[hidden]{display:none!important}
+body.dashboard-detail .luf-special-action strong{color:#15365c;font-size:16px;flex-basis:100%}
+body.dashboard-detail .luf-special-action p{font-size:12px;color:#4e6681;margin:0;flex:1}
+body.dashboard-detail .luf-special-action button{white-space:nowrap}
+body.dashboard-detail .luf-module-notice{margin-top:18px;padding:17px 19px;background:#edf5ff;border:1px solid #d7e7fa;border-radius:11px;color:#24496f;font-size:14px}
+body.dashboard-detail .luf-side-counter{background:#fff;border:1px solid #d4e2f0;border-radius:13px;overflow:hidden;margin-top:17px;box-shadow:0 3px 10px #173b600b}
+body.dashboard-detail .luf-side-counter-head{background:#0e3767;color:white;display:flex;justify-content:space-between;padding:12px 15px}
+body.dashboard-detail .luf-side-counter-body{padding:14px;display:grid;gap:4px}
+body.dashboard-detail .luf-side-counter-body>small{color:#57718c;font-size:12px}
+body.dashboard-detail #luf-total-count{font-size:36px;line-height:1.2;color:#113b6c}
+body.dashboard-detail .luf-count-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px}
+body.dashboard-detail .luf-count-item{border-radius:10px;padding:10px;display:grid;gap:4px;color:#12365e}
+body.dashboard-detail .luf-count-item span{font-size:12px}
+body.dashboard-detail .luf-count-item b{font-size:24px}
+body.dashboard-detail .luf-count-item.late{background:#fff2d9}.luf-count-item.retire{background:#ffe8eb}.luf-count-item.passes{background:#e4efff}.luf-count-item.other{background:#e2f8ed}
+body.dashboard-detail #luf-stat-link{border:0;background:transparent;color:#0965c8;padding:10px;font-size:13px;font-weight:700}
+body.dashboard-detail #movement-form{display:grid;gap:10px}
+body.dashboard-detail #movement-form label{color:#274c72}
+body.dashboard-detail #withdrawal-entry{padding:15px!important;max-width:none}
+body.dashboard-detail #withdrawal-entry h3{font-size:20px}
+body.dashboard-detail #withdrawal-entry input{max-width:100%;font-size:18px}
+body.dashboard-detail #early-panel{background:#f9fbff!important;border:1px solid #d9e5f2!important;border-radius:11px!important;padding:14px!important;margin:14px 0!important}
+body.dashboard-detail #early-panel h3{font-size:18px!important}
+body.dashboard-detail #early-panel details:first-of-type{display:none}
+body.dashboard-detail #lunch-control,body.dashboard-detail #withdrawal-history,body.dashboard-detail #tardy-counter{margin-top:16px}
+body.dashboard-detail #stats[hidden]{display:none!important}
+@media(max-width:1100px){body.dashboard-detail .luf-operation-layout{grid-template-columns:1fr}}
+@media(max-width:760px){body.dashboard-detail .workspace{grid-template-columns:1fr}body.dashboard-detail .modules{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}body.dashboard-detail .luf-side-counter{margin-bottom:18px}body.dashboard-detail .luf-operation-layout{grid-template-columns:minmax(0,1fr)}body.dashboard-detail .luf-scan-card,body.dashboard-detail .luf-activity-card{padding:12px}}
