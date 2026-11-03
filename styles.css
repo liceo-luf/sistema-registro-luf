@@ -231,3 +231,11 @@ body.dashboard-detail.theme-temprano #student-search{font-size:18px;padding:17px
 body.dashboard-detail.theme-temprano .scan-help{font-size:13px}
 @media(max-width:950px){body.dashboard-detail.theme-temprano .modules{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:600px){body.dashboard-detail.theme-temprano .modules{grid-template-columns:repeat(2,minmax(0,1fr))}body.dashboard-detail.theme-temprano #early-panel{padding:16px!important}body.dashboard-detail.theme-temprano .scanner-box{padding:15px}}
+
+
+/* Unified student identity display for every movement */
+#attention-overlay:not([hidden]){display:flex!important}
+#attention-panel,#attention-overlay .attention-panel{max-width:760px;width:min(760px,calc(100vw - 24px))}
+#attention-name{font-size:clamp(32px,4.5vw,56px);line-height:1.1;overflow-wrap:anywhere}
+#attention-course{font-size:clamp(19px,2.5vw,28px)}
+#attention-feedback.early-success{display:block!important;background:#e4f8ed!important;color:#126238!important;border:3px solid #19a566!important;border-radius:14px!important;padding:18px!important;font-size:clamp(20px,3vw,30px)!important;font-weight:850!important;text-align:center!important}
