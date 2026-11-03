@@ -353,3 +353,16 @@ body.settings-open .settings-access-gate:not([hidden])~.workspace{display:none!i
 /* Mantener visibles los controles de búsqueda en Pases de almuerzo. */
 body.dashboard-detail.theme-pases .luf-search-pane:not([hidden]) #movement-form{display:grid!important}
 body.dashboard-detail.theme-pases .luf-search-pane:not([hidden]) #student-search,body.dashboard-detail.theme-pases .luf-search-pane:not([hidden]) #matches{display:block!important}
+
+
+/* Retiro temprano: buscador de autorizaciones */
+.luf-early-admin-tools{display:grid;grid-template-columns:minmax(180px,2fr) repeat(2,minmax(130px,1fr));gap:12px;margin:18px 0}
+.luf-early-admin-tools>label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:700}
+.luf-early-admin-tools>label input,.luf-early-admin-tools>label select{width:100%;min-width:0;box-sizing:border-box;border:1px solid #c7d7e8;border-radius:9px;padding:11px;background:#fff}
+#luf-early-results,.luf-early-list{grid-column:1/-1}
+#luf-early-results{margin:0;color:#56708a;font-size:13px}
+.luf-early-list{max-height:440px;overflow:auto;border:1px solid #d5e2ef;border-radius:12px}
+.luf-early-list-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 12px;border-bottom:1px solid #e5edf6}
+.luf-early-list-row:last-child{border-bottom:0}
+.luf-early-list-row span{font-size:13px}
+@media(max-width:700px){.luf-early-admin-tools{grid-template-columns:1fr}.luf-early-list-row{flex-wrap:wrap}}
