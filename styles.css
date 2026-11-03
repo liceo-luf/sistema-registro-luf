@@ -289,3 +289,14 @@ body.dashboard-detail #lunch-control,body.dashboard-detail #withdrawal-history,b
 body.dashboard-detail #stats[hidden]{display:none!important}
 @media(max-width:1100px){body.dashboard-detail .luf-operation-layout{grid-template-columns:1fr}}
 @media(max-width:760px){body.dashboard-detail .workspace{grid-template-columns:1fr}body.dashboard-detail .modules{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}body.dashboard-detail .luf-side-counter{margin-bottom:18px}body.dashboard-detail .luf-operation-layout{grid-template-columns:minmax(0,1fr)}body.dashboard-detail .luf-scan-card,body.dashboard-detail .luf-activity-card{padding:12px}}
+
+
+/* Sidebar structural fix: counter stays below navigation, not in grid's second column */
+body.dashboard-detail .workspace>.luf-operation-sidebar{grid-column:1;grid-row:1;display:flex;flex-direction:column;gap:0;min-width:0}
+body.dashboard-detail .workspace>.panel{grid-column:2;grid-row:1;min-width:0}
+body.dashboard-detail .luf-operation-sidebar>.modules{width:100%;display:flex;flex-direction:column;gap:8px}
+body.dashboard-detail .luf-operation-sidebar>.luf-side-counter{width:100%;margin-top:17px}
+body.dashboard-detail .luf-operation-layout{width:100%;min-width:0}
+body.dashboard-detail .luf-scan-card,body.dashboard-detail .luf-activity-card{min-width:0}
+body.dashboard-detail .panel-head{width:100%}
+@media(max-width:760px){body.dashboard-detail .workspace>.luf-operation-sidebar{grid-column:1;grid-row:1}body.dashboard-detail .workspace>.panel{grid-column:1;grid-row:2}body.dashboard-detail .luf-operation-sidebar>.modules{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}}
