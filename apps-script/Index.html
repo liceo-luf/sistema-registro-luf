@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#F3F7FD"><title>Sistema de Registro LUF</title><base target="_top"><style>:root{font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;color:#e8f3ff;background:#0b1120;color-scheme:dark}*{box-sizing:border-box}body{margin:0}button,input,textarea{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #22d3ee;outline-offset:2px}.top{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px clamp(16px,4vw,56px);border-bottom:1px solid #263752}.brand{display:flex;align-items:center;gap:14px}.brand strong{display:block;letter-spacing:.04em}.brand small{display:block;color:#a5b4ca;margin-top:4px}.mark{display:grid;place-items:center;background:#22d3ee;color:#071321;font-weight:900;border-radius:12px;width:54px;height:54px}.demo,.tag{border:1px solid #34546a;border-radius:999px;color:#67e8f9;padding:7px 11px;font-size:11px;letter-spacing:.08em;white-space:nowrap}main{max-width:1450px;margin:auto;padding:28px clamp(16px,4vw,56px)}.intro{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:26px}.intro h1{font-size:clamp(27px,3.3vw,42px);margin:6px 0}.intro p:not(.eyebrow),#module-desc{color:#a5b4ca}.eyebrow{color:#22d3ee;font-size:11px;letter-spacing:.16em;font-weight:800}.clock{color:#b4c9db;font-variant-numeric:tabular-nums}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:24px}.stat,.panel{background:#17243a;border:1px solid #283c57;border-radius:18px}.stat{padding:18px}.stat small{color:#a5b4ca}.stat strong{display:block;font-size:30px;margin-top:7px}.workspace{display:grid;grid-template-columns:245px minmax(0,1fr);gap:18px}.modules{display:grid;align-content:start;gap:9px}.module{background:#152238;border:1px solid #2b405c;border-radius:12px;padding:16px;text-align:left;color:#dcecf9;font-weight:700}.module:hover,.module.active{border-color:#22d3ee;background:#1b3850}.module span{display:block;color:#a5b4ca;font-weight:400;font-size:12px;margin-top:4px}.panel{padding:clamp(16px,3vw,30px);min-width:0}.panel-head,.history-head{display:flex;align-items:center;justify-content:space-between;gap:14px}.panel h2{margin:4px 0 6px;font-size:27px}.panel-head{margin-bottom:25px}form{display:grid;gap:10px}label{font-weight:650;font-size:13px}input:not([type=checkbox]),textarea{width:100%;border:1px solid #40526b;border-radius:10px;padding:13px;background:#0e1a2c;color:#f2f8ff}textarea{resize:vertical}.matches{display:grid;gap:5px}.match{width:100%;text-align:left;background:#21344c;color:#e8f3ff;border:1px solid #36506d;border-radius:9px;padding:10px}.match:hover{border-color:#22d3ee}.selected{background:#123c46;border:1px solid #227d8e;border-radius:10px;padding:12px;color:#bffaff}.form-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:8px}.check{display:flex;align-items:center;gap:8px}.primary{background:#22d3ee;color:#06131d;border:0;border-radius:10px;padding:13px 18px;font-weight:800}.secondary{background:#23364e;color:#d8f8ff;border:1px solid #3e5b77;border-radius:9px;padding:9px 13px}.danger{background:transparent;color:#ffb0b0;border:1px solid #8c4242;border-radius:9px;padding:10px}.history-head{margin-top:30px}.history-head h3{font-size:17px}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font-size:13px}td,th{text-align:left;padding:12px 9px;border-bottom:1px solid #2d3c52;white-space:nowrap}th{color:#a5b4ca}td:last-child{white-space:normal}#feedback{min-height:20px;margin-top:10px;color:#67e8f9}#feedback.error{color:#fca5a5}footer{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-top:25px;color:#a5b4ca;font-size:12px}@media(max-width:850px){.workspace{grid-template-columns:1fr}.modules{grid-template-columns:repeat(2,minmax(0,1fr))}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.clock{display:none}}@media(max-width:520px){.top{align-items:flex-start}.demo{font-size:9px}.brand strong{font-size:12px}.brand small{font-size:10px}.modules{grid-template-columns:1fr 1fr}.module{padding:12px;font-size:12px}.tag{display:none}footer{align-items:flex-start;flex-direction:column}}
+.scanner-box{border:1px solid #207d8c;background:#102c3c;border-radius:14px;padding:18px;margin-bottom:24px}.scanner-heading{display:flex;justify-content:space-between;gap:10px;align-items:center}.scanner-heading strong{font-size:18px;color:#a5f3fc}.scanner-heading span{font-size:12px;color:#67e8f9}.scanner-box p{color:#afc5d8;font-size:13px;line-height:1.5}.scan-row{display:flex;gap:10px;margin-top:8px}.scan-row input{flex:1;min-width:0;font-size:18px!important;border-color:#22d3ee!important}.scan-help{margin-bottom:0}@media(max-width:520px){.scan-row{flex-direction:column}}
+
+.scan-status{margin-top:14px;padding:13px;border-radius:10px;background:#174a43;color:#b9fbe0;border:1px solid #26846b;font-weight:700}.scan-status.error{background:#482329;border-color:#b45361;color:#fecdd3}.scan-status.warning{background:#4b3b1f;border-color:#b58a32;color:#fde68a}.recent-scans{margin-top:16px;border-top:1px solid #2b5365;padding-top:13px}.recent-scans strong{font-size:13px}.recent-scans ol{margin:8px 0 0;padding-left:23px}.recent-scans li{padding:6px 0;font-size:13px;color:#c5d6e7}.recent-scans li small{color:#94a9be;margin-left:7px}
+
+.admin-panel{background:#17243a;border:1px solid #283c57;border-radius:18px;margin-bottom:24px;padding:20px}.admin-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}.admin-heading h2{font-size:20px}.student-form{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0}.student-form input{flex:1;min-width:160px}.admin-panel p{color:#a5b4ca;font-size:13px}.admin-panel input[type=file]{margin-bottom:12px}.admin-panel td button{margin:3px;padding:7px 9px}.inactive-row{opacity:.55}#admin-content[hidden]{display:none}@media(max-width:650px){.admin-heading{flex-direction:column;align-items:start}}
+
+.mapping-selects{display:flex;flex-wrap:wrap;gap:12px;margin:12px 0}.mapping-selects label{flex:1;min-width:155px}.mapping-selects select{display:block;width:100%;margin-top:6px;background:#0e1a2c;border:1px solid #40526b;border-radius:9px;color:#e8f3ff;padding:10px}#import-mapping{border:1px solid #3d6573;border-radius:12px;padding:15px;margin:12px 0}#import-mapping[hidden]{display:none}
+
+.credential-tools{margin:20px 0;padding:15px;background:#102c3c;border:1px solid #207d8c;border-radius:12px}.credential-tools strong{display:block;margin-bottom:10px}.credential-controls{display:flex;gap:10px;align-items:end;flex-wrap:wrap}.credential-controls select{display:block;background:#0e1a2c;color:#e8f3ff;border:1px solid #40526b;border-radius:9px;padding:10px;margin-top:5px}.credential-check{width:18px;height:18px;accent-color:#22d3ee}#credential-print-area{display:none}@media print{@page{size:A4;margin:10mm}body{background:white!important;color:black!important}body>*:not(#credential-print-area){display:none!important}#credential-print-area{display:grid!important;grid-template-columns:repeat(3,54mm);gap:3mm;justify-content:center;align-content:start}.credential-card{box-sizing:border-box;width:54mm;height:85.6mm;border:1px solid #111;display:flex;flex-direction:column;align-items:center;text-align:center;padding:5mm 2mm;background:white!important;color:#111!important;break-inside:avoid;page-break-inside:avoid}.credential-heading{font-size:10px;font-weight:900;line-height:1.3}.credential-subtitle{font-size:8px;margin:3mm 0}.credential-qr{width:41mm;height:41mm;display:flex;align-items:center;justify-content:center}.credential-qr img,.credential-qr canvas{max-width:100%;height:auto}.credential-name{font-size:11px;margin-top:2mm;overflow-wrap:anywhere}.credential-course{font-size:11px;font-weight:bold;margin-top:2mm}.credential-id{font-size:8px;margin-top:auto}}
+
+.scan-identity{display:flex;align-items:center;gap:18px;background:#103b46;border:2px solid #22d3ee;border-radius:16px;padding:20px;margin-top:16px;min-height:125px}.scan-identity[hidden]{display:none}.scan-avatar{display:grid;place-items:center;width:92px;height:92px;flex:0 0 92px;border-radius:15px;background:#235c73;color:white;font-size:30px;font-weight:900}.scan-person{display:flex;flex-direction:column;gap:5px;min-width:0}.scan-person strong{font-size:26px;line-height:1.15;overflow-wrap:anywhere}.scan-person span{font-size:19px;font-weight:700}.scan-person small{font-size:14px;font-weight:700}.scan-identity.success{background:#123c33;border-color:#34d399}.scan-identity.warning{background:#43351b;border-color:#fbbf24}.scan-identity.error{background:#44232d;border-color:#fb7185}@media(max-width:520px){.scan-identity{gap:12px;padding:12px}.scan-avatar{width:65px;height:65px;flex-basis:65px;font-size:22px}}
+/* Distinct module accents; scan status colors remain independent. */
+.theme-atrasos{--module-accent:#f59e0b}.module.theme-atrasos{border-left:5px solid #f59e0b}.module.theme-atrasos.active{border-color:#f59e0b;background:color-mix(in srgb,#f59e0b 16%,#152238)}
+.theme-retiros{--module-accent:#f87171}.module.theme-retiros{border-left:5px solid #f87171}.module.theme-retiros.active{border-color:#f87171;background:color-mix(in srgb,#f87171 16%,#152238)}
+.theme-pases{--module-accent:#2dd4bf}.module.theme-pases{border-left:5px solid #2dd4bf}.module.theme-pases.active{border-color:#2dd4bf;background:color-mix(in srgb,#2dd4bf 16%,#152238)}
+.theme-temprano{--module-accent:#c084fc}.module.theme-temprano{border-left:5px solid #c084fc}.module.theme-temprano.active{border-color:#c084fc;background:color-mix(in srgb,#c084fc 16%,#152238)}
+.theme-ingreso{--module-accent:#60a5fa}.module.theme-ingreso{border-left:5px solid #60a5fa}.module.theme-ingreso.active{border-color:#60a5fa;background:color-mix(in srgb,#60a5fa 16%,#152238)}
+.theme-almuerzo{--module-accent:#4ade80}.module.theme-almuerzo{border-left:5px solid #4ade80}.module.theme-almuerzo.active{border-color:#4ade80;background:color-mix(in srgb,#4ade80 16%,#152238)}
+.panel{border-top:4px solid var(--module-accent,#22d3ee)}.panel-head .eyebrow,.panel-head h2{color:var(--module-accent,#22d3ee)}.scanner-box{border-color:var(--module-accent,#22d3ee)}.scanner-heading strong{color:var(--module-accent,#22d3ee)}.scan-row input{border-color:var(--module-accent,#22d3ee)!important}.module:focus-visible{outline-color:var(--module-accent,#22d3ee)}
+
+/* LUF light institutional design system */
+:root{color-scheme:light;color:#183252;background:#f3f7fd;font-family:Inter,"Segoe UI",system-ui,sans-serif}
+body{background:linear-gradient(180deg,#e9f2ff 0,#f5f8fd 260px,#f5f8fd 100%);color:#183252}
+.top{background:#fff;border-bottom:1px solid #dbe6f4;box-shadow:0 3px 18px #1239680a;padding-top:16px;padding-bottom:16px}
+.brand strong{color:#143e76;font-size:15px}.brand small{color:#667d98}.mark{background:linear-gradient(135deg,#0e4b94,#2588d9);color:white;box-shadow:0 5px 16px #135ca52b}
+.demo,.tag{background:#eaf3ff;border:1px solid #c9ddf7;color:#205b9d;letter-spacing:.04em}
+main{max-width:1480px}.intro{padding:10px 0}.intro h1{color:#123d74;letter-spacing:-.035em}.intro p:not(.eyebrow),#module-desc{color:#60768e}.eyebrow{color:#2175c2}.clock{color:#526e8d}
+.stat,.panel,.admin-panel{background:#fff;border:1px solid #dfE8f3;box-shadow:0 7px 28px #1a49700c;border-radius:19px}
+.stat{padding:21px 22px}.stat small{color:#607994;font-weight:600}.stat strong{color:#124a8e;font-size:33px}
+.workspace{grid-template-columns:255px minmax(0,1fr);gap:20px}.modules{gap:11px}
+.module{background:#fff;color:#173a63;border:1px solid #dfE8f3;box-shadow:0 3px 10px #173d6809;border-radius:13px;padding:17px;font-size:15px;transition:background .15s,transform .15s,box-shadow .15s}
+.module span{color:#6a8098;font-size:12px;line-height:1.4}.module:hover{background:#f0f7ff;transform:translateY(-1px);box-shadow:0 5px 18px #174b8016}
+.module.active{box-shadow:0 6px 20px #174b801b}.panel{border-top:4px solid var(--module-accent,#1e74c9)}.panel-head h2{font-size:30px;color:#153f72}.panel-head .eyebrow{color:#236fb6}
+label{color:#2d4b6b}input:not([type=checkbox]),textarea,.mapping-selects select,.credential-controls select{background:#fff;color:#1a3454;border:1px solid #cbd9e9;box-shadow:0 1px 2px #143b6505;border-radius:10px}
+input::placeholder,textarea::placeholder{color:#8497ad}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid #7ab7f2;outline-offset:2px}
+.primary{background:linear-gradient(135deg,#1557a1,#247dcf);color:#fff;box-shadow:0 4px 11px #175fa42a}
+.primary:hover{filter:brightness(1.06)}.secondary{background:#eff5fd;color:#205184;border:1px solid #cddff2}.secondary:hover{background:#e3effc}
+.danger{color:#a72c3e;border-color:#f0bdc5}.match{background:#f1f7ff;color:#25466a;border-color:#d7e6f7}.match:hover{border-color:#3686d1}
+.selected{background:#e8f7f6;border-color:#8ad5d1;color:#176c70}
+.scanner-box{background:linear-gradient(155deg,#f1f8ff,#e8f3ff);border:1px solid #bcd8f4;border-top:4px solid var(--module-accent,#247bce);box-shadow:inset 0 1px #fff;border-radius:16px;padding:22px}
+.scanner-heading strong{color:#174e8e;font-size:19px}.scanner-heading span{color:#276aa9;font-weight:700}.scanner-box p{color:#57748e}
+.scan-row input{background:#fff!important;color:#183252!important;border:2px solid #8dbbe8!important}.scan-status{background:#e8f8ef;color:#16633b;border-color:#b7e8cc}.scan-status.error{background:#fff0f1;color:#a92b3f;border-color:#f2bdc5}.scan-status.warning{background:#fff7e6;color:#886014;border-color:#f1d28c}
+.recent-scans{border-top:1px solid #d0e1f1}.recent-scans strong{color:#234e79}.recent-scans li{color:#42617f}.recent-scans li small{color:#8294a7}
+.scan-identity{background:#edf7ff;color:#153f70;border-color:#74b3e9}.scan-avatar{background:linear-gradient(145deg,#1660ad,#65a8e4);color:#fff}.scan-identity.success{background:#eaf9f0;color:#185a3d;border-color:#42b883}.scan-identity.warning{background:#fff6e6;color:#805d1c;border-color:#eab95d}.scan-identity.error{background:#fff0f2;color:#9f3345;border-color:#e67b8d}
+.admin-panel{padding:24px}.admin-heading h2{color:#174d88}.admin-panel p{color:#637b95}.credential-tools{background:#edf6ff;border:1px solid #c6dff6}.credential-tools strong{color:#1e5184}
+#credential-count,#admin-feedback{color:#225c9d}#import-mapping{background:#f5faff;border-color:#c9dff5}
+td,th{border-bottom:1px solid #e6edf5}th{color:#526d89;background:#f5f9ff;font-weight:700}td{color:#31506e}tbody tr:hover{background:#f7faff}
+#feedback{color:#1d7b55}#feedback.error{color:#b02b43}
+footer{color:#71869c}.tag{font-size:11px}
+.theme-atrasos{--module-accent:#d99523}.theme-retiros{--module-accent:#d45e69}.theme-pases{--module-accent:#2697a6}.theme-temprano{--module-accent:#8e78cb}.theme-ingreso{--module-accent:#2d7bcb}.theme-almuerzo{--module-accent:#36a177}
+.module.theme-atrasos.active{background:#fff7e8}.module.theme-retiros.active{background:#fff0f2}.module.theme-pases.active{background:#eafafb}.module.theme-temprano.active{background:#f4f0ff}.module.theme-ingreso.active{background:#eaf4ff}.module.theme-almuerzo.active{background:#edfaf3}
+@media(max-width:850px){.workspace{grid-template-columns:1fr}.modules{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.top{padding:13px 16px}.brand strong{font-size:12px}.intro h1{font-size:29px}.stat{padding:15px}.stat strong{font-size:26px}.modules{grid-template-columns:repeat(2,minmax(0,1fr))}.module{padding:12px}.scanner-box{padding:14px}.panel{padding:16px}}
+@media print{body{background:#fff!important;color:#111!important}#credential-print-area .credential-card{background:#fff!important;color:#111!important}}
+
+.tardy-settings{background:#f3f8ff;border:1px solid #c9dff6;border-radius:15px;padding:18px;margin-bottom:20px}.tardy-settings[hidden]{display:none}.tardy-title{display:flex;justify-content:space-between;gap:10px;align-items:center;color:#184d84}.tardy-title span{font-size:12px;color:#64809b}.tardy-controls{display:flex;gap:12px;align-items:end;flex-wrap:wrap;margin-top:13px}.tardy-controls label{flex:1;min-width:135px}.tardy-controls input{display:block;margin-top:6px;padding:10px}.tardy-summary{background:white;border:1px solid #d3e5f6;padding:13px;border-radius:10px;color:#23517c;font-weight:650}#tardy-config-feedback{color:#2864a0;font-size:13px}
+
+.admin-config{margin:16px 0;border:1px solid #d0e2f5;border-radius:13px;background:#f8fbff}.admin-config summary{padding:15px 17px;cursor:pointer;color:#19518b;font-weight:750}.admin-config .tardy-settings{margin:0;border:0;border-top:1px solid #d0e2f5;border-radius:0 0 13px 13px}.tardy-counter{margin-bottom:18px}.tardy-counter[hidden]{display:none}.tardy-counter .tardy-summary{background:#f3f8ff;border-color:#d5e7f9}
+
+.tardy-pass-actions{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin:12px 0 18px;padding:12px;background:#edf6ff;border:1px solid #c9e0f6;border-radius:12px}.tardy-pass-actions[hidden]{display:none}.tardy-pass-actions small{color:#597a9b}
+
+.tardy-pass-actions label{display:flex;flex-direction:column;gap:5px;flex:1;min-width:175px}.tardy-pass-actions select,.tardy-pass-actions input{background:#fff;color:#193e66;border:1px solid #c6d9ee;border-radius:9px;padding:10px;width:100%}.tardy-pass-actions button{align-self:end}
+
+.pass-quick-types{display:flex;flex-wrap:wrap;gap:8px;flex:1 1 100%}.pass-quick-types button{flex:1;min-width:125px;padding:13px 10px;font-weight:700}.pass-quick-types .pass-type-active{background:#1e5b99;color:#fff;border-color:#1e5b99}
+
+/* Fullscreen QR attention screen */
+.attention-overlay[hidden],#attention-adult[hidden],#attention-confirm[hidden]{display:none!important}
+.attention-overlay{position:fixed;inset:0;z-index:10000;background:rgba(5,22,43,.88);display:flex;align-items:center;justify-content:center;padding:18px;overflow:auto}
+.attention-panel{background:#fff;color:#14365b;border-radius:22px;width:min(690px,100%);box-shadow:0 25px 90px #0007;overflow:hidden;max-height:96vh;overflow-y:auto}
+.attention-head{display:flex;justify-content:space-between;align-items:center;background:#123b69;color:#fff;padding:17px 22px;font-size:14px;letter-spacing:.04em}
+.attention-head button{background:#ffffff22;color:#fff;border:1px solid #ffffff55;border-radius:10px;padding:7px 12px;font-size:20px;cursor:pointer}
+.attention-body{text-align:center;padding:24px 25px 28px}
+.attention-status{display:inline-block;color:#16805d;background:#e6f7ed;padding:8px 14px;border-radius:99px;font-size:12px;font-weight:800}
+.attention-avatar{width:100px;height:100px;border-radius:50%;background:#dceaf8;color:#174b7e;display:grid;place-items:center;font-size:35px;font-weight:850;margin:17px auto}
+#attention-name{font-size:clamp(30px,5vw,48px);line-height:1.12;margin:0 0 8px;text-transform:uppercase;color:#102f53}
+.attention-course{font-size:clamp(21px,3vw,29px);font-weight:800;color:#34699e}
+#attention-message{font-size:15px;color:#506b85;margin:12px 0}
+.attention-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:24px 0 14px}
+.attention-actions button{border:2px solid #d5e5f4;border-radius:14px;min-height:105px;background:#f0f6fd;color:#1b4d80;font-size:16px;font-weight:800;padding:14px 8px;cursor:pointer}
+.attention-actions button:hover,.attention-actions button:focus{background:#d8ebff;border-color:#2a70b7}
+.attention-actions button.chosen{background:#d8ebff;border-color:#2a70b7}
+#attention-adult{text-align:left;background:#f0f6fd;padding:14px;border-radius:12px;margin:10px 0}
+#attention-adult input{width:100%;padding:12px;margin-top:7px}
+#attention-adult p{color:#965c1d;font-size:13px}
+#attention-confirm{width:100%;margin:10px 0;padding:15px;font-size:17px}
+#attention-feedback{font-weight:700;color:#175c8f}
+.attention-body>small{display:block;margin-top:14px;color:#6d8295}
+@media(max-width:550px){.attention-actions{grid-template-columns:1fr}.attention-actions button{min-height:60px}.attention-body{padding:18px 15px}.attention-overlay{padding:8px}}
+
+/* Dedicated RUT-only withdrawal landing view */
+.withdrawal-entry[hidden]{display:none!important}
+.theme-retiros .scanner-box,.theme-retiros #movement-form,.theme-retiros #feedback,.theme-retiros .history-head,.theme-retiros .table-wrap{display:none!important}
+.withdrawal-entry{min-height:460px;margin:26px 0 35px;padding:55px 30px;text-align:center;border-radius:22px;border:1px solid #c8dcf2;background:linear-gradient(160deg,#f1f7ff,#ffffff);box-shadow:0 12px 40px #164a7b10;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:15px}
+.withdrawal-symbol{background:#174b83;color:#fff;border-radius:20px;padding:18px;font-weight:900;font-size:26px;letter-spacing:.07em}
+.withdrawal-entry h3{font-size:clamp(28px,4vw,42px);color:#123d6b;margin:4px 0}
+.withdrawal-entry p{color:#52708e;font-size:16px;margin:0 0 14px}
+.withdrawal-entry label{font-weight:850;color:#164978;font-size:15px;letter-spacing:.08em}
+#withdrawal-rut{width:min(600px,100%);font-size:clamp(26px,4vw,38px);text-align:center;letter-spacing:.035em;padding:20px 18px;border:3px solid #77aee4;border-radius:15px;background:#fff;color:#153e68}
+#withdrawal-find{min-width:260px;padding:16px 26px;font-size:18px;border-radius:12px}
+#withdrawal-feedback{color:#ae3434;font-weight:700;min-height:22px}
+
+.withdrawal-matches[hidden]{display:none!important}.withdrawal-matches{width:min(600px,100%);display:flex;flex-direction:column;gap:8px}.withdrawal-matches button{width:100%;text-align:left;padding:13px 17px;border-radius:10px;background:#e9f3ff;color:#164978;border:1px solid #aaccec;font-weight:700;cursor:pointer}
+
+/* Withdrawal history: visible only in the withdrawals module */
+.withdrawal-history[hidden]{display:none!important}.theme-retiros .withdrawal-history .table-wrap{display:block!important;overflow-x:auto}.withdrawal-history{margin:20px 0 30px;border:1px solid #d5e5f5;border-radius:16px;padding:20px;background:#fff}.withdrawal-history-head h3{color:#153f6e;margin:0 0 6px;font-size:21px}.withdrawal-history-head p{font-size:13px;color:#66809a;margin:0 0 14px}.withdrawal-history td{white-space:normal;min-width:130px}.withdrawal-history td:last-child{min-width:230px}
+
+/* Lunch passes: QR-only departures, roster-based confirmed returns */
+.lunch-control[hidden]{display:none!important}.lunch-control{margin:20px 0;padding:20px;background:#fff;border:1px solid #c9e0f2;border-radius:16px}.lunch-control h3{margin:0 0 15px;color:#174b83;font-size:22px}.lunch-control h4{margin:20px 0 5px;color:#174b83}.lunch-control p{color:#66809a;font-size:13px}.lunch-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.lunch-stat{background:#edf6ff;border-radius:12px;padding:15px}.lunch-stat small{display:block;color:#567b9d}.lunch-stat strong{display:block;font-size:30px;color:#174b83}.lunch-control td{white-space:normal}/* Pases de almuerzo utiliza la búsqueda manual compartida con los demás módulos. */@media(max-width:550px){.lunch-summary{grid-template-columns:1fr}}
+
+/* Prominent lunch authorization warning and operator field */
+#attention-feedback.lunch-blocked{display:block!important;background:#fee2e2!important;color:#991b1b!important;border:3px solid #dc2626!important;border-radius:14px!important;padding:20px!important;font-size:clamp(22px,3vw,34px)!important;line-height:1.25!important;font-weight:900!important;text-align:center!important;letter-spacing:.02em!important}.lunch-operator-wrap[hidden]{display:none!important}.lunch-operator-wrap{margin:16px 0;padding:14px;background:#eff6ff;border:1px solid #93c5fd;border-radius:12px}.lunch-operator-wrap label{display:block;font-weight:700;margin-bottom:8px}.lunch-operator-wrap input{width:100%;box-sizing:border-box;padding:12px;font-size:17px}.lunch-operator-wrap small{display:block;margin-top:7px}
+
+#attention-feedback.lunch-outside-hours{display:block!important;background:#fff3cd!important;color:#854d0e!important;border:3px solid #d97706!important;border-radius:14px!important;padding:20px!important;font-size:clamp(22px,3vw,34px)!important;line-height:1.25!important;font-weight:900!important;text-align:center!important}
+
+
+/* Upper navigation and consolidated administration */
+.top-actions{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.top-tabs{display:flex;gap:6px;padding:5px;border:1px solid #34546a;border-radius:12px;background:#101c2e}
+.top-tab{border:0;background:transparent;color:#c7d8eb;border-radius:8px;padding:11px 17px;font-weight:700}
+.top-tab.active{background:#22d3ee;color:#071321}
+#settings-view[hidden]{display:none!important}
+.settings-open .intro,.settings-open .stats,.settings-open .workspace{display:none!important}
+.settings-open #settings-view{display:grid;gap:18px;margin:20px 0}
+.settings-intro h2{margin:0 0 5px;font-size:28px}
+.settings-intro p{color:#a5b4ca}
+.settings-card{background:#17243a;border:1px solid #34546a;border-radius:16px;padding:20px}
+.settings-card h3{margin:0 0 12px}
+.settings-card details{padding:10px 0}
+.settings-card #early-config{display:grid;gap:10px}
+.settings-card #early-days{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
+.settings-card #early-days label{display:grid;gap:5px}
+.settings-card input:not([type=checkbox]),.settings-card select,.settings-card textarea{max-width:100%;background:#0e1a2c;color:#f2f8ff;border:1px solid #40526b;border-radius:9px;padding:10px}
+.settings-card button{margin:7px 0}
+.settings-open #student-admin{display:block!important}
+.settings-open #admin-content{display:block!important}
+@media(max-width:720px){.top-actions{width:100%}.top-tabs{width:100%}.top-tab{flex:1}.top{flex-wrap:wrap}}
+
+
+/* Approved LUF light dashboard — visual layer, existing workflows retained */
+:root{font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;background:#f5f8fc;color:#132d50;color-scheme:light}
+body{background:#f5f8fc;color:#132d50}
+.top{background:linear-gradient(110deg,#0b2b4d,#123c67);color:white;padding:16px clamp(16px,3vw,48px);border-bottom:0;box-shadow:0 3px 12px #173c6020}
+.brand strong{font-size:18px}.brand small{color:#d5e4f5}.mark{background:#fff2ca;color:#123e70;border:2px solid #d3a743;border-radius:10px}
+.top-tabs{background:#ffffff12;border:0}.top-tab{color:#e8f3ff;padding:12px 22px}.top-tab.active{background:#126ce2;color:#fff;box-shadow:0 2px 8px #0002}.demo{color:#dce8f5;border-color:#ffffff50}
+main{max-width:1580px;padding:24px clamp(16px,2vw,38px)}
+.intro{margin-bottom:18px}.intro h1{font-size:clamp(24px,2.6vw,34px);color:#0f3155}.intro p:not(.eyebrow),#module-desc{color:#5c718b}.eyebrow{color:#176ad5}.clock{color:#3c5877}
+.stats{gap:12px;margin-bottom:18px}.stat,.panel{background:#fff;border:1px solid #d9e3ee;box-shadow:0 3px 12px #102b4610}.stat{border-radius:12px}.stat small{color:#6b7e95}.stat strong{color:#143d68}
+.workspace{grid-template-columns:minmax(210px,265px) minmax(0,1fr);gap:16px}
+.modules{gap:10px}.module{background:#fff;color:#163858;border:1px solid #d8e5f1;border-left:5px solid #176de0;border-radius:12px;padding:17px;box-shadow:0 2px 8px #16385c0b}.module:nth-child(2){border-left-color:#19874c}.module:nth-child(3){border-left-color:#236cdd}.module:nth-child(4){border-left-color:#f28a12}.module:nth-child(5){border-left-color:#7651c6}.module:nth-child(6){border-left-color:#168e92}.module:hover,.module.active{background:#eaf3ff;border-color:#93bee9;color:#0c4687}.module span{color:#71849b}
+.panel{border-radius:16px}.panel h2{color:#173d67}.tag{color:#2165a6;border-color:#b5d3ed}
+.primary{background:#126de0;color:#fff}.secondary{background:#edf4fc;color:#174b82;border-color:#c7d9eb}.danger{color:#a82736;border-color:#e3aab1}
+input:not([type=checkbox]),textarea,select{background:#fff;color:#163454;border-color:#c5d5e7}
+table{color:#1e3858}th{background:#f1f6fc;color:#536c88}td,th{border-bottom-color:#e2eaf2}
+.selected{background:#e8f7f1;color:#15543f;border-color:#a4ddc5}
+.settings-open #settings-view{display:block;margin:8px 0}
+.settings-shell{display:grid;grid-template-columns:235px minmax(0,1fr);gap:22px;align-items:start}
+.settings-sidebar{display:grid;gap:6px;position:sticky;top:12px}
+.settings-nav-item{background:transparent;color:#344e6d;border:0;border-radius:9px;padding:14px 16px;text-align:left;font-weight:650}
+.settings-nav-item:hover{background:#e6effc}.settings-nav-item.active{background:#126de0;color:white}
+.settings-content{min-width:0}.settings-intro h2{color:#153b64}.settings-intro p{color:#657b94}
+.settings-overview h3{color:#173b65;font-size:20px}.settings-tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.settings-tile{display:grid;grid-template-columns:54px 1fr;grid-template-rows:auto auto;column-gap:13px;align-items:center;text-align:left;background:#fff;border:1px solid #dce7f2;border-radius:14px;padding:17px;color:#17395d;box-shadow:0 3px 9px #16365b0a}
+.settings-tile:hover{border-color:#82b7ed;background:#f7fbff}.settings-tile-icon{grid-row:span 2;display:grid;place-items:center;width:52px;height:52px;background:#e8f2ff;border-radius:12px;font-size:27px}.settings-tile strong{font-size:16px}.settings-tile small{color:#667e99;line-height:1.4}
+.settings-card,.settings-open #student-admin{background:#fff;border:1px solid #dce6f0;border-radius:15px;padding:22px;color:#173859}
+.settings-card h3{color:#163c64}.settings-card-heading{display:flex;align-items:center;gap:13px;margin-bottom:18px}.settings-card-heading strong{display:block;font-size:19px}.settings-card-heading small{display:block;color:#67809b;margin-top:4px}.settings-card-icon{display:grid;place-items:center;background:#eaf2ff;border-radius:12px;width:52px;height:52px;font-size:26px}
+.settings-card input:not([type=checkbox]),.settings-card select,.settings-card textarea{background:#fff;color:#173859;border-color:#c5d6e8}
+.settings-section[hidden],.settings-overview[hidden],.settings-open #student-admin[hidden]{display:none!important}
+.settings-open #student-admin{display:block}
+.settings-open #admin-content{display:block}
+.settings-open .settings-intro{margin-bottom:20px}
+@media(max-width:900px){.settings-shell{grid-template-columns:1fr}.settings-sidebar{display:flex;overflow-x:auto;position:static;padding-bottom:8px}.settings-nav-item{white-space:nowrap}.settings-tiles{grid-template-columns:1fr}}
+@media(max-width:650px){.workspace{grid-template-columns:1fr}.modules{grid-template-columns:repeat(2,minmax(0,1fr))}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.settings-tile{padding:12px}.top{gap:12px}.demo{display:none}}
+
+
+/* Dashboard home matching the approved two-view concept */
+body:not(.settings-open):not(.dashboard-detail) .intro,body:not(.settings-open):not(.dashboard-detail) .stats,body:not(.settings-open):not(.dashboard-detail) .workspace{display:none!important}
+.dashboard-home{display:block}
+body.settings-open .dashboard-home,body.dashboard-detail .dashboard-home{display:none!important}
+#dashboard-back{margin-bottom:16px}
+.dashboard-hero{display:flex;align-items:center;justify-content:space-between;gap:20px;margin:0 0 24px}
+.dashboard-hero h1{font-size:clamp(26px,3vw,36px);margin:0 0 7px;color:#102d51}
+.dashboard-hero p{color:#627791;margin:0}
+.dashboard-time{color:#315879;font-weight:650;text-align:right}
+.dashboard-module-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-bottom:18px}
+.dashboard-module{--accent:#0d6be0;--tint:#eaf4ff;background:var(--tint);border-radius:13px;padding:18px;min-width:0;display:flex;flex-direction:column;gap:12px}
+.dashboard-module.green{--accent:#17864a;--tint:#e9f7ef}.dashboard-module.orange{--accent:#ed850e;--tint:#fff3e5}.dashboard-module.purple{--accent:#7650bf;--tint:#f3edff}.dashboard-module.teal{--accent:#008b89;--tint:#e7f7f5}
+.dashboard-module-head{display:flex;align-items:center;gap:13px;min-height:76px}
+.dashboard-module-icon{flex:0 0 62px;width:62px;height:62px;border-radius:12px;background:var(--accent);color:white;display:grid;place-items:center;font-size:34px;font-weight:800}
+.dashboard-module h2{font-size:19px;line-height:1.15;margin:0 0 5px;color:#102b4c}
+.dashboard-module p{font-size:13px;line-height:1.35;color:#304862;margin:0}
+.dashboard-module-scan{border:1px solid #d4e1ed;background:#fff;color:#667b96;border-radius:8px;padding:13px 12px;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dashboard-module-scan span{margin-right:7px;color:#355577}
+.dashboard-module-button{background:var(--accent);color:#fff;border:0;border-radius:8px;padding:13px 12px;font-size:14px;font-weight:800}
+.dashboard-module-button:hover{filter:brightness(.92)}
+.dashboard-module-foot{background:#ffffff83;border-radius:7px;text-align:center;padding:9px;color:#36516c;font-size:12px}
+.dashboard-bottom{display:grid;grid-template-columns:minmax(0,2fr) minmax(290px,1fr);gap:15px}
+.dashboard-card{background:#fff;border:1px solid #dce5ef;border-radius:12px;overflow:hidden;min-width:0}
+.dashboard-card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 18px;background:#f9fbfe;border-bottom:1px solid #e2e9f2}
+.dashboard-card-head h2{font-size:17px;margin:0;color:#142e4f}
+.dashboard-card-head button{border:0;background:transparent;color:#126bd7;font-size:13px;font-weight:700}
+.dashboard-card table{width:100%}.dashboard-card td,.dashboard-card th{padding:12px 14px;font-size:12px}
+.dashboard-info-line{display:flex;align-items:center;justify-content:space-between;gap:15px;margin:0 17px;padding:15px 0;border-bottom:1px solid #e5edf5;font-size:13px}
+.dashboard-info-line strong{text-align:right;font-size:13px;color:#18385b}
+.brand strong{color:#fff!important}.brand small{color:#e4f0fc!important}.demo{background:#ffffff15;color:#fff!important}
+@media(max-width:1150px){.dashboard-module-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:720px){.dashboard-module-grid,.dashboard-bottom{grid-template-columns:1fr}.dashboard-hero{align-items:flex-start;flex-direction:column}.dashboard-time{text-align:left}.dashboard-module-head{min-height:auto}}
+
+
+/* Retiro temprano shares the same workspace and navigation as all other modules. */
+body.dashboard-detail.theme-temprano #early-panel{width:100%;background:#fff;border:1px solid #d9e3ee!important;border-radius:12px!important;padding:18px!important;margin:16px 0!important}
+body.dashboard-detail.theme-temprano #early-panel h3{color:#173d67;font-size:19px;margin:0 0 12px}
+body.dashboard-detail.theme-temprano #early-panel details{background:#f8fbff;border:1px solid #dce6f0;border-radius:10px;padding:12px;margin-top:10px}
+body.dashboard-detail.theme-temprano #early-panel details:first-of-type{display:none}
+body.dashboard-detail.theme-temprano #early-panel summary{color:#173d67;cursor:pointer}
+body.dashboard-detail.theme-temprano #early-panel input,body.dashboard-detail.theme-temprano #early-panel textarea{background:#fff;color:#173d67;border:1px solid #c5d6e8}
+/* Unified student identity display for every movement */
+#attention-overlay:not([hidden]){display:flex!important}
+#attention-panel,#attention-overlay .attention-panel{max-width:760px;width:min(760px,calc(100vw - 24px))}
+#attention-name{font-size:clamp(32px,4.5vw,56px);line-height:1.1;overflow-wrap:anywhere}
+#attention-course{font-size:clamp(19px,2.5vw,28px)}
+#attention-feedback.early-success{display:block!important;background:#e4f8ed!important;color:#126238!important;border:3px solid #19a566!important;border-radius:14px!important;padding:18px!important;font-size:clamp(20px,3vw,30px)!important;font-weight:850!important;text-align:center!important}
+
+
+/* LUF approved unified operation pages */
+body.dashboard-detail main{max-width:none;padding:22px clamp(15px,2vw,35px)}
+body.dashboard-detail .intro,body.dashboard-detail .stats{display:none!important}
+body.dashboard-detail .workspace{display:grid;grid-template-columns:245px minmax(0,1fr);gap:22px;max-width:none;align-items:start}
+body.dashboard-detail .modules{display:flex;flex-direction:column;gap:8px}
+body.dashboard-detail .modules .module{width:100%;min-height:55px;padding:13px 15px;border:1px solid #dce7f2;border-left:4px solid transparent;border-radius:11px;background:#fff;box-shadow:0 2px 8px #12365b0a;color:#17375c}
+body.dashboard-detail .modules .module.active{background:#e4efff;color:#0758bd;border-left-color:#126de0;border-top-color:#dce7f2;border-right-color:#dce7f2;border-bottom-color:#dce7f2}
+body.dashboard-detail .modules .module span{display:none}
+body.dashboard-detail .workspace>.panel{padding:0;background:transparent;border:0;box-shadow:none;min-width:0}
+body.dashboard-detail .panel-head{padding:8px 0 20px;border:0}
+body.dashboard-detail .panel-head .eyebrow{display:none}
+body.dashboard-detail .panel-head h2{font-size:clamp(27px,3vw,38px);margin:0 0 5px;color:#102e53}
+body.dashboard-detail .panel-head p{font-size:16px;color:#435e7d;margin:0}
+body.dashboard-detail .panel-head .tag{display:none}
+body.dashboard-detail .luf-operation-layout{display:grid;grid-template-columns:minmax(320px,1fr) minmax(350px,1.18fr);gap:16px;align-items:start}
+body.dashboard-detail .luf-scan-card,body.dashboard-detail .luf-activity-card{background:#fff;border:1px solid #d6e3f1;border-radius:15px;padding:16px;min-width:0;box-shadow:0 3px 10px #15365b0a}
+body.dashboard-detail .luf-input-tabs{display:grid;grid-template-columns:1fr 1fr;gap:7px;background:#edf4fc;border-radius:10px;padding:5px;margin-bottom:15px}
+body.dashboard-detail .luf-input-tab{border:0;background:transparent;color:#17416c;padding:13px 8px;border-radius:9px;font-weight:750}
+body.dashboard-detail .luf-input-tab.active{background:#103e75;color:#fff}
+body.dashboard-detail .luf-input-tab:disabled{opacity:.5;cursor:not-allowed}
+body.dashboard-detail .luf-qr-pane[hidden],body.dashboard-detail .luf-search-pane[hidden]{display:none!important}
+body.dashboard-detail .scanner-box{border:0!important;border-radius:13px;background:#eef5ff!important;padding:25px 18px!important;box-shadow:none}
+body.dashboard-detail .scanner-heading{display:flex;align-items:center;justify-content:center}
+body.dashboard-detail .scanner-heading strong{font-size:18px;color:#123f75}
+body.dashboard-detail .scanner-box>p{color:#54708d;text-align:center}
+body.dashboard-detail .scanner-box .scan-row{display:flex;gap:8px}
+body.dashboard-detail .scanner-box input{background:#fff;color:#15385e;min-width:0}
+body.dashboard-detail .recent-scans{margin-top:14px}
+body.dashboard-detail .luf-recent-heading{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:4px 0 15px}
+body.dashboard-detail .luf-recent-heading h3{font-size:19px;color:#143b66;margin:0}
+body.dashboard-detail .luf-history-link{border:0;background:none;color:#126de0;font-weight:750;font-size:12px}
+body.dashboard-detail .luf-activity-card .table-wrap{overflow:auto}
+body.dashboard-detail .luf-activity-card table{width:100%}
+body.dashboard-detail .luf-activity-card th{background:#eef3f9;color:#385675}
+body.dashboard-detail .luf-activity-card th,body.dashboard-detail .luf-activity-card td{font-size:12px;padding:12px 9px}
+body.dashboard-detail .luf-activity-card .history-head{margin-top:16px;border-top:1px solid #e1eaf3;padding-top:12px}
+body.dashboard-detail .luf-activity-card .history-head h3{display:none}
+body.dashboard-detail .luf-special-action{display:flex;align-items:center;flex-wrap:wrap;gap:8px;background:#f4f8fe;border:1px solid #dce8f5;border-radius:11px;padding:15px;margin-bottom:16px}
+body.dashboard-detail .luf-special-action[hidden]{display:none!important}
+body.dashboard-detail .luf-special-action strong{color:#15365c;font-size:16px;flex-basis:100%}
+body.dashboard-detail .luf-special-action p{font-size:12px;color:#4e6681;margin:0;flex:1}
+body.dashboard-detail .luf-special-action button{white-space:nowrap}
+body.dashboard-detail .luf-module-notice{margin-top:18px;padding:17px 19px;background:#edf5ff;border:1px solid #d7e7fa;border-radius:11px;color:#24496f;font-size:14px}
+body.dashboard-detail .luf-side-counter{background:#fff;border:1px solid #d4e2f0;border-radius:13px;overflow:hidden;margin-top:17px;box-shadow:0 3px 10px #173b600b}
+body.dashboard-detail .luf-side-counter-head{background:#0e3767;color:white;display:flex;justify-content:space-between;padding:12px 15px}
+body.dashboard-detail .luf-side-counter-body{padding:14px;display:grid;gap:4px}
+body.dashboard-detail .luf-side-counter-body>small{color:#57718c;font-size:12px}
+body.dashboard-detail #luf-total-count{font-size:36px;line-height:1.2;color:#113b6c}
+body.dashboard-detail .luf-count-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px}
+body.dashboard-detail .luf-count-item{border-radius:10px;padding:10px;display:grid;gap:4px;color:#12365e}
+body.dashboard-detail .luf-count-item span{font-size:12px}
+body.dashboard-detail .luf-count-item b{font-size:24px}
+body.dashboard-detail .luf-count-item.late{background:#fff2d9}.luf-count-item.retire{background:#ffe8eb}.luf-count-item.passes{background:#e4efff}.luf-count-item.other{background:#e2f8ed}
+body.dashboard-detail #luf-stat-link{border:0;background:transparent;color:#0965c8;padding:10px;font-size:13px;font-weight:700}
+body.dashboard-detail #movement-form{display:grid;gap:10px}
+body.dashboard-detail #movement-form label{color:#274c72}
+body.dashboard-detail #withdrawal-entry{padding:15px!important;max-width:none}
+body.dashboard-detail #withdrawal-entry h3{font-size:20px}
+body.dashboard-detail #withdrawal-entry input{max-width:100%;font-size:18px}
+body.dashboard-detail #early-panel{background:#f9fbff!important;border:1px solid #d9e5f2!important;border-radius:11px!important;padding:14px!important;margin:14px 0!important}
+body.dashboard-detail #early-panel h3{font-size:18px!important}
+body.dashboard-detail #early-panel details:first-of-type{display:none}
+body.dashboard-detail #lunch-control,body.dashboard-detail #withdrawal-history,body.dashboard-detail #tardy-counter{margin-top:16px}
+body.dashboard-detail #stats[hidden]{display:none!important}
+@media(max-width:1100px){body.dashboard-detail .luf-operation-layout{grid-template-columns:1fr}}
+@media(max-width:760px){body.dashboard-detail .workspace{grid-template-columns:1fr}body.dashboard-detail .modules{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}body.dashboard-detail .luf-side-counter{margin-bottom:18px}body.dashboard-detail .luf-operation-layout{grid-template-columns:minmax(0,1fr)}body.dashboard-detail .luf-scan-card,body.dashboard-detail .luf-activity-card{padding:12px}}
+
+
+/* Sidebar structural fix: counter stays below navigation, not in grid's second column */
+body.dashboard-detail .workspace>.luf-operation-sidebar{grid-column:1;grid-row:1;display:flex;flex-direction:column;gap:0;min-width:0}
+body.dashboard-detail .workspace>.panel{grid-column:2;grid-row:1;min-width:0}
+body.dashboard-detail .luf-operation-sidebar>.modules{width:100%;display:flex;flex-direction:column;gap:8px}
+body.dashboard-detail .luf-operation-sidebar>.luf-side-counter{width:100%;margin-top:17px}
+body.dashboard-detail .luf-operation-layout{width:100%;min-width:0}
+body.dashboard-detail .luf-scan-card,body.dashboard-detail .luf-activity-card{min-width:0}
+body.dashboard-detail .panel-head{width:100%}
+@media(max-width:760px){body.dashboard-detail .workspace>.luf-operation-sidebar{grid-column:1;grid-row:1}body.dashboard-detail .workspace>.panel{grid-column:1;grid-row:2}body.dashboard-detail .luf-operation-sidebar>.modules{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+
+/* Consistent module layout: specific control panels stay in the records column */
+body.dashboard-detail .luf-activity-card #lunch-control,
+body.dashboard-detail .luf-activity-card #withdrawal-history{position:static;width:100%;max-width:none;margin:18px 0 0;padding:15px;border:1px solid #d9e6f3;border-radius:12px;box-shadow:none;background:#f9fbfe;overflow-x:auto}
+body.dashboard-detail .luf-activity-card #lunch-control[hidden],
+body.dashboard-detail .luf-activity-card #withdrawal-history[hidden]{display:none!important}
+body.dashboard-detail .luf-activity-card #lunch-control h3,
+body.dashboard-detail .luf-activity-card #withdrawal-history h3{font-size:18px;margin:0 0 10px}
+body.dashboard-detail .luf-activity-card #lunch-control .table-wrap,
+body.dashboard-detail .luf-activity-card #withdrawal-history .table-wrap{max-width:100%;overflow-x:auto}
+body.dashboard-detail .luf-activity-card #lunch-control table,
+body.dashboard-detail .luf-activity-card #withdrawal-history table{width:100%;min-width:0}
+body.dashboard-detail .luf-activity-card #lunch-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+body.dashboard-detail.theme-retiros .luf-activity-card #history{display:none}
+body.dashboard-detail.theme-retiros .luf-activity-card .luf-recent-heading + .table-wrap{display:none}
+body.dashboard-detail .luf-activity-card .luf-recent-heading{margin-top:0}
+body.dashboard-detail .luf-activity-card .withdrawal-history-head p{font-size:12px;color:#56708a}
+@media(max-width:760px){body.dashboard-detail .luf-activity-card #lunch-summary{grid-template-columns:1fr}}
+
+
+/* Protected configuration entrance */
+.settings-access-gate[hidden]{display:none!important}
+.settings-access-gate{min-height:calc(100vh - 170px);display:grid;place-items:center;padding:35px 15px}
+.settings-access-form{width:min(100%,470px);background:#fff;border:1px solid #d4e2f2;border-radius:18px;box-shadow:0 12px 36px #0e35631a;padding:34px;display:flex;flex-direction:column;gap:14px;color:#14365d}
+.settings-access-symbol{margin:auto;background:#e9f2ff;width:78px;height:78px;border-radius:50%;display:grid;place-items:center;font-size:35px}
+.settings-access-form h2{text-align:center;margin:4px 0 0;font-size:27px}
+.settings-access-form>p:not(#settings-access-error){text-align:center;color:#536f8e;margin:0 0 8px;line-height:1.5}
+.settings-access-form label{font-weight:750;font-size:14px}
+.settings-access-form input{padding:15px;border:1px solid #bdd0e6;border-radius:10px;font-size:17px;width:100%;box-sizing:border-box}
+.settings-access-form button{padding:14px;font-weight:750;border-radius:9px}
+#settings-access-error{color:#b42318;font-size:13px;margin:0;min-height:1em}
+body.settings-open #settings-view[hidden]{display:none!important}
+body.settings-open .settings-access-gate:not([hidden])~.workspace{display:none!important}
+
+
+/* Configuración > Pases de almuerzo */
+#settings-lunch .luf-pass-toolbar{display:grid;grid-template-columns:minmax(180px,2fr) repeat(2,minmax(135px,1fr));gap:12px;margin:18px 0}
+#settings-lunch .luf-pass-toolbar label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:700}
+#settings-lunch .luf-pass-toolbar input,#settings-lunch .luf-pass-toolbar select{width:100%;min-width:0;box-sizing:border-box;border:1px solid #c7d7e8;border-radius:9px;padding:11px;background:white}
+#settings-lunch .luf-pass-summary{padding:12px 14px;background:#edf5ff;border-radius:10px;font-weight:700;color:#234c78}
+#settings-lunch .luf-pass-bulk{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:15px 0}
+#settings-lunch .luf-pass-bulk label{display:flex;align-items:center;gap:7px}
+#settings-lunch .luf-pass-note{color:#56708a;font-size:13px}
+#settings-lunch #luf-pass-feedback{font-weight:650;color:#234c78;min-height:1em}
+#settings-lunch .table-wrap{overflow-x:auto}
+#settings-lunch table{width:100%;min-width:620px}
+#settings-lunch td,#settings-lunch th{padding:10px;text-align:left}
+@media(max-width:700px){#settings-lunch .luf-pass-toolbar{grid-template-columns:1fr}}
+
+/* Mantener visibles los controles de búsqueda en Pases de almuerzo. */
+body.dashboard-detail.theme-pases .luf-search-pane:not([hidden]) #movement-form{display:grid!important}
+body.dashboard-detail.theme-pases .luf-search-pane:not([hidden]) #student-search,body.dashboard-detail.theme-pases .luf-search-pane:not([hidden]) #matches{display:block!important}
+
+
+/* Retiro temprano: buscador de autorizaciones */
+.luf-early-admin-tools{display:grid;grid-template-columns:minmax(180px,2fr) repeat(2,minmax(130px,1fr));gap:12px;margin:18px 0}
+.luf-early-admin-tools>label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:700}
+.luf-early-admin-tools>label input,.luf-early-admin-tools>label select{width:100%;min-width:0;box-sizing:border-box;border:1px solid #c7d7e8;border-radius:9px;padding:11px;background:#fff}
+#luf-early-results,.luf-early-list{grid-column:1/-1}
+#luf-early-results{margin:0;color:#56708a;font-size:13px}
+.luf-early-list{max-height:440px;overflow:auto;border:1px solid #d5e2ef;border-radius:12px}
+.luf-early-list-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 12px;border-bottom:1px solid #e5edf6}
+.luf-early-list-row:last-child{border-bottom:0}
+.luf-early-list-row span{font-size:13px}
+@media(max-width:700px){.luf-early-admin-tools{grid-template-columns:1fr}.luf-early-list-row{flex-wrap:wrap}}
+
+
+/* Acceso institucional */
+.luf-login{min-height:100vh;display:grid;place-items:center;padding:24px;background:#eef4fb;color:#16324f}
+.luf-login[hidden],#app[hidden]{display:none!important}
+.luf-login-card{width:min(430px,100%);background:#fff;border:1px solid #d7e3ef;border-radius:18px;padding:32px;box-shadow:0 18px 50px rgba(21,50,79,.12);text-align:center}
+.luf-login-mark{width:70px;height:70px;margin:0 auto 16px;border-radius:18px;display:grid;place-items:center;background:#163b62;color:#fff;font-size:22px;font-weight:800}
+.luf-login-card h1{margin:0 0 8px;color:#16324f}.luf-login-card>p{margin:0 0 24px;color:#5c7185}
+.luf-login-card form{text-align:left;display:grid;gap:14px}.luf-login-card label{display:grid;gap:7px;font-weight:700;color:#274c72}
+.luf-login-card input{width:100%;padding:12px;border:1px solid #bfd0e0;border-radius:9px;background:#fff;color:#16324f}
+#luf-login-feedback{min-height:20px;margin:0;text-align:center;color:#a32828;font-size:13px}
+</style></head>
+<body><div id="app"><header class="top"><div class="brand"><div class="mark">LUF</div><div><strong>SISTEMA DE REGISTRO LUF</strong><small>Liceo Luis Urbina Flores · Sistema en la nube · Datos de prueba</small></div></div><div class="top-actions"><nav class="top-tabs" aria-label="Secciones principales"><button type="button" id="tab-register" class="top-tab active" aria-current="page">Registros</button><button type="button" id="tab-settings" class="top-tab">⚙ Configuración</button></nav><span class="demo">MODO DEMOSTRACIÓN</span></div></header><main><section class="intro"><div><p class="eyebrow">PANEL INSTITUCIONAL</p><h1>Registro de movimientos</h1><p>Selecciona un módulo para registrar y revisar operaciones de prueba.</p></div><div id="clock" class="clock"></div></section><section id="settings-view" hidden><div class="settings-intro"><h2>Configuración del sistema</h2><p>Administración de demostración. Los cambios se guardan solo en este navegador.</p></div><div id="settings-key" class="settings-card"><h3>Clave administrativa</h3><p>Configura aquí la clave inicial o cámbiala. Se solicitará para modificar autorizaciones y anular movimientos.</p><div id="settings-key-action"></div></div><div id="settings-early" class="settings-card"><h3>Autorizaciones de retiro temprano</h3><div id="settings-early-action"></div></div></section><section id="student-admin" class="admin-panel"><div class="admin-heading"><h2>Administración de estudiantes · Demo</h2><button id="admin-toggle" type="button" class="secondary">Mostrar / ocultar</button></div><div id="admin-content" hidden><details class="admin-config"><summary>Configuración de atrasos · Horarios y alertas</summary><section id="tardy-settings" class="tardy-settings"><div class="tardy-title"><strong>Configuración de atrasos · Demostración</strong><span>Se guarda en este navegador</span></div><div class="tardy-controls"><label>Inicio de jornada <input id="tardy-start" type="time" value="08:10"></label><label>Tolerancia (minutos) <input id="tardy-tolerance" type="number" min="0" max="60" value="10"></label><label>Horario especial individual <input id="tardy-exception-time" type="time" value="08:30"></label><label>Alerta al acumular <input id="tardy-alert-count" type="number" min="1" max="30" value="3"></label><button id="tardy-save" class="secondary" type="button">Guardar horarios</button></div><p id="tardy-config-feedback"></p></section></details><form id="student-form" class="student-form"><input id="student-name" placeholder="Nombre ficticio" required><input id="student-rut" placeholder="Identificador ficticio" required><input id="student-course" placeholder="Curso" required><button type="submit" class="primary">Agregar estudiante</button></form><p>Importar archivo CSV de demostración (Nombre, Identificador, Curso).</p><input type="file" id="roster-file" accept=".csv,text/csv"><div id="import-mapping" hidden><p><strong>Selecciona las columnas y revisa la vista previa:</strong></p><div id="mapping-selects" class="mapping-selects"></div><p id="import-preview"></p><button id="import-apply" type="button" class="primary">Confirmar importación</button></div><p id="admin-feedback" role="status"></p><div class="credential-tools"><strong>Credenciales QR de prueba</strong><div class="credential-controls"><label>Curso <select id="credential-course"><option value="">Todos los cursos</option></select></label><button id="credential-select-course" type="button" class="secondary">Seleccionar curso</button><button id="credential-clear" type="button" class="secondary">Limpiar selección</button><button id="credential-print" type="button" class="primary">Imprimir seleccionados / Guardar PDF</button></div><p id="credential-count">0 estudiantes seleccionados</p></div><div class="table-wrap"><table><thead><tr><th>Elegir</th><th>Nombre</th><th>Curso</th><th>Identificador</th><th>QR</th><th>Estado</th><th>Acciones</th></tr></thead><tbody id="student-rows"></tbody></table></div></div></section><section id="stats" class="stats" aria-label="Resumen diario"></section><section class="workspace"><nav id="modules" class="modules" aria-label="Módulos"></nav><section class="panel"><div class="panel-head"><div><p class="eyebrow">OPERACIÓN</p><h2 id="module-title">Atrasos</h2><p id="module-desc"></p></div><span class="tag">Datos ficticios</span></div><section id="tardy-counter" class="tardy-counter"><div id="tardy-summary" class="tardy-summary">Selecciona o escanea un estudiante para ver sus atrasos del mes.</div></section><section id="lunch-control" class="lunch-control" hidden><h3>Control de pases de almuerzo</h3><p class="lunch-hours-notice">Horario de salida: 13:55 a 14:55. Los regresos pueden registrarse después.</p><div id="lunch-summary" class="lunch-summary"></div><h4>Estudiantes fuera del establecimiento</h4><p>El regreso puede confirmarse desde esta nómina, incluso sin credencial QR.</p><div class="table-wrap"><table><thead><tr><th>Estudiante</th><th>Curso</th><th>Hora de salida</th><th>Acción</th></tr></thead><tbody id="lunch-outside"></tbody></table></div></section><section id="withdrawal-entry" class="withdrawal-entry" hidden><div class="withdrawal-symbol">LUF</div><h3>Retiro de estudiantes</h3><p>Ingrese el RUT o nombre del estudiante para iniciar el retiro.</p><label for="withdrawal-rut">RUT O NOMBRE DEL ESTUDIANTE</label><input id="withdrawal-rut" autocomplete="off" spellcheck="false" inputmode="text" placeholder="RUT o nombre del estudiante"><div id="withdrawal-matches" class="withdrawal-matches" hidden></div><button id="withdrawal-find" type="button" class="primary">Buscar estudiante</button><p id="withdrawal-feedback" role="status"></p></section><section id="withdrawal-history" class="withdrawal-history" hidden><div class="withdrawal-history-head"><h3>Historial de retiros</h3><p>Registros realizados en este navegador. No constituye una lista de adultos autorizados.</p></div><div class="table-wrap"><table><thead><tr><th>Fecha y hora</th><th>Estudiante</th><th>Curso</th><th>Persona que retira</th></tr></thead><tbody id="withdrawal-history-rows"></tbody></table></div></section><section class="scanner-box" aria-label="Lector de códigos QR"><div class="scanner-heading"><strong>▣ Lector de código QR USB</strong><span>Escaneo rápido</span></div><p>Haz clic en el campo y escanea una credencial. Los lectores USB configurados como teclado envían el código y Enter.</p><label for="scan-input">Código de credencial</label><div class="scan-row"><input id="scan-input" autocomplete="off" spellcheck="false" placeholder="Escanea aquí: LUF-001"><button type="button" id="scan-focus" class="secondary">Activar lector</button></div><div id="scan-identity" class="scan-identity" hidden aria-live="polite"><div id="scan-avatar" class="scan-avatar">LUF</div><div class="scan-person"><strong id="scan-person-name">Estudiante</strong><span id="scan-person-course">Curso</span><small id="scan-person-result">Estado</small></div></div><div id="tardy-pass-actions" class="tardy-pass-actions" hidden><div class="pass-quick-types" role="group" aria-label="Motivo del pase"><button type="button" class="secondary pass-type-btn" data-pass-type="Atraso habitual">Atraso</button><button type="button" class="secondary pass-type-btn" data-pass-type="Ingreso con pase">Con pase</button><button type="button" class="secondary pass-type-btn" data-pass-type="Justificación del apoderado">Justificado por apoderado</button></div><input id="tardy-pass-type" type="hidden" value="Atraso habitual"><input id="tardy-pass-note" type="hidden" value=""><button id="print-tardy-pass" type="button" class="secondary">Imprimir pase de ingreso a clases</button><small>Impresión opcional, sin interrumpir el lector QR.</small></div><div id="scan-status" class="scan-status" role="status" aria-live="polite">Lector preparado para el siguiente código.</div><div class="recent-scans"><strong>Últimos cinco escaneos</strong><ol id="scan-recent"></ol></div><p class="scan-help">Para probar sin lector, escribe LUF-001 y presiona Enter. En esta demo solo se registra automáticamente un atraso normal o un almuerzo; otros módulos requieren confirmación manual.</p></section><form id="movement-form"><label for="student-search">Buscar estudiante por nombre, RUT o código QR</label><input id="student-search" autocomplete="off" placeholder="Ej.: Camila, 11111111-1 o LUF-001" required><div id="matches" class="matches" role="listbox"></div><div id="selected" class="selected" hidden></div><label for="reason">Motivo / observación</label><textarea id="reason" rows="2" placeholder="Opcional; requerido en situaciones excepcionales"></textarea><div class="form-row"><label class="check"><input id="exceptional" type="checkbox"> Registro excepcional</label><button class="primary" type="submit">Registrar movimiento</button></div></form><div id="feedback" role="status" aria-live="polite"></div><div class="history-head"><h3>Últimos movimientos</h3><button id="export" type="button" class="secondary">Exportar CSV</button></div><div class="table-wrap"><table><thead><tr><th>Hora</th><th>Estudiante</th><th>Módulo</th><th>Tipo</th><th>Observación</th></tr></thead><tbody id="history"></tbody></table></div></section></section><footer><p>Sistema LUF · Versión de prueba en la nube · Datos ficticios.</p><button id="reset" class="danger" type="button">Restablecer datos de prueba</button></footer></main></div><script src="./app.js" defer></script><script src="./students-admin.js" defer></script><script src="./settings-ui.js" defer></script><script src="./dashboard-ui.js" defer></script><script src="./unified-ui.js" defer></script><script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script><script src="./credentials.js" defer></script><div id="attention-overlay" class="attention-overlay" hidden><div class="attention-panel" role="dialog" aria-modal="true" aria-labelledby="attention-name"><header class="attention-head"><strong>LUF · CONTROL DE ESTUDIANTES</strong><button type="button" id="attention-close" aria-label="Cerrar">✕</button></header><div class="attention-body"><span class="attention-status">✓ CREDENCIAL IDENTIFICADA</span><div id="attention-avatar" class="attention-avatar">LUF</div><h2 id="attention-name">Estudiante</h2><div id="attention-course" class="attention-course"></div><p id="attention-message"></p><div id="attention-actions" class="attention-actions"></div><div id="attention-adult" hidden><label for="attention-adult-name">Adulto que retira</label><input id="attention-adult-name" placeholder="Nombre completo"><label for="attention-adult-rut">RUT del adulto</label><input id="attention-adult-rut" placeholder="Ej.: 12.345.678-9"><label class="attention-check"><input id="attention-verified" type="checkbox"> He verificado identidad y autorización para retirar al estudiante</label><p>Verifica identidad y autorización antes de confirmar.</p></div><div id="lunch-operator-wrap" class="lunch-operator-wrap" hidden><label for="lunch-operator">Funcionario que autoriza el movimiento</label><input id="lunch-operator" type="text" autocomplete="name" placeholder="Nombre y apellido del funcionario"><small>Obligatorio para guardar la salida o el regreso.</small></div><button type="button" id="attention-confirm" class="primary" hidden>Confirmar movimiento</button><p id="attention-feedback" role="alert"></p><small>El siguiente QR actualizará esta pantalla.</small></div></div></div></body></html>
