@@ -21,23 +21,17 @@ configSection.innerHTML='<h3>Horarios y alertas de atrasos</h3>';
 const tardyDetails=rosterPanel.querySelector('.admin-config');
 if(tardyDetails){tardyDetails.open=true;configSection.append(tardyDetails);settingsView.append(configSection)}
 // Local demo access gate. This is not server-side authentication.
-const SETTINGS_SESSION_MS=30*60*1000;
-const SETTINGS_SESSION_KEY='luf-settings-unlocked-until';
-let settingsUnlocked=Number(sessionStorage.getItem(SETTINGS_SESSION_KEY)||0)>Date.now();
-function keepSettingsSession(){settingsUnlocked=true;sessionStorage.setItem(SETTINGS_SESSION_KEY,String(Date.now()+SETTINGS_SESSION_MS))}
-function settingsSessionValid(){const until=Number(sessionStorage.getItem(SETTINGS_SESSION_KEY)||0);settingsUnlocked=until>Date.now();return settingsUnlocked}
+let settingsUnlocked=false;
 const accessGate=document.createElement('div');
 accessGate.id='settings-access-gate';
 accessGate.className='settings-access-gate';
 accessGate.hidden=true;
-accessGate.innerHTML='<form id="settings-access-form" class="settings-access-form"><div class="settings-access-symbol" aria-hidden="true">🔐</div><h2>Acceso a Configuración</h2><p>Ingresa la clave administrativa para administrar estudiantes, pases y horarios.</p><label for="settings-access-password">Clave administrativa</label><div class="settings-password-wrap"><input id="settings-access-password" type="password" autocomplete="current-password" required placeholder="Clave administrativa"><button type="button" class="settings-password-toggle" id="settings-password-toggle" aria-label="Mostrar contraseña" title="Mostrar contraseña">👁</button></div><small class="settings-session-note">La sesión permanecerá abierta durante 30 minutos en esta pestaña.</small><p id="settings-access-error" role="alert" aria-live="polite"></p><button type="submit" class="primary" id="settings-access-submit">Ingresar a Configuración</button><button type="button" class="secondary" id="settings-access-cancel">Volver a Registros</button></form>';
+accessGate.innerHTML='<form id="settings-access-form" class="settings-access-form"><div class="settings-access-symbol" aria-hidden="true">🔐</div><h2>Acceso a Configuración</h2><p>Ingresa la clave administrativa para administrar estudiantes, pases y horarios.</p><label for="settings-access-password">Clave administrativa</label><input id="settings-access-password" type="password" autocomplete="off" required placeholder="Clave administrativa"><p id="settings-access-error" role="alert" aria-live="polite"></p><button type="submit" class="primary" id="settings-access-submit">Ingresar a Configuración</button><button type="button" class="secondary" id="settings-access-cancel">Volver a Registros</button></form>';
 settingsView.before(accessGate);
 const accessForm=document.getElementById('settings-access-form');
 const accessPassword=document.getElementById('settings-access-password');
 const accessError=document.getElementById('settings-access-error');
 const accessSubmit=document.getElementById('settings-access-submit');
-const passwordToggle=document.getElementById('settings-password-toggle');
-passwordToggle.addEventListener('click',()=>{const showing=accessPassword.type==='text';accessPassword.type=showing?'password':'text';passwordToggle.textContent=showing?'👁':'🙈';passwordToggle.setAttribute('aria-label',showing?'Mostrar contraseña':'Ocultar contraseña');passwordToggle.title=showing?'Mostrar contraseña':'Ocultar contraseña'});
 function refreshGate(){
  const hasKey=!!localStorage.getItem('luf-late-admin-key');
  accessForm.querySelector('h2').textContent=hasKey?'Acceso a Configuración':'Configuración inicial';
@@ -56,13 +50,13 @@ accessForm.addEventListener('submit',e=>{
   if(repeated!==entered){accessError.textContent='Las claves no coinciden.';return}
   try{localStorage.setItem('luf-late-admin-key',entered)}catch{accessError.textContent='No se pudo guardar la clave en este navegador.';return}
  }
- keepSettingsSession();switchView('settings');
+ settingsUnlocked=true;switchView('settings');
 });
 document.getElementById('settings-access-cancel').addEventListener('click',()=>switchView('register'));
 function switchView(name){
  const config=name==='settings';
- if(!config){accessPassword.value='';}
- const granted=config&&settingsSessionValid();
+ if(!config){settingsUnlocked=false;accessPassword.value='';}
+ const granted=config&&settingsUnlocked;
  document.body.classList.toggle('settings-open',config);
  settingsView.hidden=!granted;
  accessGate.hidden=!config||granted;
