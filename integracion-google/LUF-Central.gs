@@ -1,6 +1,6 @@
 /**
  * LUF - API central (preparación, NO PUBLICAR sin configurar OAuth).
- * Archivo independiente para agregar a un proyecto NUEVO de Apps Script.
+ * Archivo de referencia para el proyecto Apps Script institucional existente.
  * No reemplaza Código.gs del sistema anterior.
  *
  * Propiedades del script obligatorias:
@@ -37,7 +37,7 @@ function lufRows_(name) {
     const row = {_row:i+2};
     header.forEach((key,j) => row[key] = values[j]);
     return row;
-  }).filter(row => header.some(k => String(row[k]||'').trim()));
+  }).filter(row => lufText_(row[header[0]]) && lufText_(row[header[0]]) !== header[0]);
 }
 function lufText_(x) { return String(x == null ? '' : x).trim(); }
 function lufYes_(x) { return x === true || ['true','1','si','sí','activo'].includes(lufText_(x).toLowerCase()); }
@@ -63,7 +63,7 @@ function lufAudit_(user, action, id) {
   lufSheet_('AUDITORIA').appendRow([new Date(),user.email,action,'ESTUDIANTE',id,'']);
 }
 function lufStudents_() {
-  return lufRows_('ESTUDIANTES').map(r => ({
+  return lufRows_('ESTUDIANTES').filter(r => lufText_(r.ID) && lufText_(r.RUT) && lufText_(r.NOMBRE)).map(r => ({
     id:lufText_(r.ID), rut:lufText_(r.RUT), name:lufText_(r.NOMBRE),
     course:lufText_(r.CURSO), active:lufYes_(r.ACTIVO),
     qr:lufText_(r.QR)||lufText_(r.ID),
@@ -96,7 +96,8 @@ function lufSavePhoto_(user, studentId, dataUrl) {
   const bytes = Utilities.base64Decode(match[2]);
   if (!bytes.length || bytes.length > LUF_CENTRAL.maxPhotoBytes) throw new Error('Máximo 3 MB');
   const folder = DriveApp.getFolderById(lufCfg_('LUF_PHOTO_FOLDER_ID'));
-  const file = folder.createFile(Utilities.newBlob(bytes,match[1],lufText_(studentId)+'.jpg'));
+  const ext = { 'image/jpeg':'.jpg', 'image/png':'.png', 'image/webp':'.webp' }[match[1]];
+  const file = folder.createFile(Utilities.newBlob(bytes,match[1],lufText_(studentId)+ext));
   const sheet = lufSheet_('ESTUDIANTES');
   const header = sheet.getRange(1,1,1,sheet.getLastColumn()).getValues()[0].map(String);
   let col = header.indexOf('FOTO_ID')+1;
@@ -111,19 +112,29 @@ function lufSavePhoto_(user, studentId, dataUrl) {
 }
 function lufSaveStudent_(user, data) {
   lufAdmin_(user);
+  data = data || {};
   const name=lufText_(data.name), course=lufText_(data.course), rut=lufText_(data.rut);
   if (!name || !course || !rut) throw new Error('Nombre, curso y RUT obligatorios');
-  const sheet=lufSheet_('ESTUDIANTES');
-  const current=lufRows_('ESTUDIANTES');
-  const duplicate=current.find(r=>lufText_(r.RUT).toLowerCase()===rut.toLowerCase() && lufText_(r.ID)!==lufText_(data.id));
-  if (duplicate) throw new Error('RUT ya registrado');
-  const id=lufText_(data.id)||'LUF-'+Utilities.getUuid().slice(0,8).toUpperCase();
-  const found=current.find(r=>lufText_(r.ID)===id);
-  const row=[id,rut,name,course,data.active!==false,lufText_(data.qr)||id];
-  if (found) sheet.getRange(found._row,1,1,6).setValues([row]);
-  else sheet.appendRow(row);
-  lufAudit_(user,'GUARDAR_ESTUDIANTE',id);
-  return {ok:true,id};
+  if ([name,course,rut].some(v => v.length > 180)) throw new Error('Datos demasiado extensos');
+  const lock=LockService.getScriptLock();
+  lock.waitLock(20000);
+  try {
+    const sheet=lufSheet_('ESTUDIANTES');
+    const current=lufRows_('ESTUDIANTES');
+    const requestedId=lufText_(data.id);
+    const duplicate=current.find(r=>lufText_(r.RUT).toLowerCase()===rut.toLowerCase() && lufText_(r.ID)!==requestedId);
+    if (duplicate) throw new Error('RUT ya registrado');
+    const found=requestedId && current.find(r=>lufText_(r.ID)===requestedId);
+    if (requestedId && !found) throw new Error('No se puede editar un estudiante inexistente');
+    const id=requestedId||'LUF-'+Utilities.getUuid().slice(0,8).toUpperCase();
+    const row=[id,rut,name,course,data.active!==false,lufText_(data.qr)||id];
+    if (found) sheet.getRange(found._row,1,1,6).setValues([row]);
+    else sheet.appendRow(row);
+    lufAudit_(user,'GUARDAR_ESTUDIANTE',id);
+    return {ok:true,id};
+  } finally {
+    lock.releaseLock();
+  }
 }
 /**
  * NOTA DE DESPLIEGUE: Apps Script ContentService no ofrece un control
