@@ -136,6 +136,58 @@ function lufSaveStudent_(user, data) {
     lock.releaseLock();
   }
 }
+
+// Registro central de movimientos. No se habilita en GitHub Pages hasta
+// disponer de transporte autenticado compatible con CORS.
+const LUF_MOVEMENT_HEADERS = ['ID','FECHA_HORA','MODULO','ESTUDIANTE_ID','TIPO','MOTIVO','FUNCIONARIO','DETALLE_JSON'];
+
+function lufMovements_(user) {
+  const rows=lufRows_('MOVIMIENTOS');
+  return rows.filter(r => lufText_(r.ID) && lufText_(r.ID)!=='ID').map(r => {
+    let detail={};
+    try { detail=JSON.parse(lufText_(r.DETALLE_JSON)||'{}'); } catch(e) {}
+    return {
+      ...detail,
+      id:lufText_(r.ID),
+      at:r.FECHA_HORA instanceof Date ? r.FECHA_HORA.toISOString() : lufText_(r.FECHA_HORA),
+      module:lufText_(r.MODULO),
+      studentId:lufText_(r.ESTUDIANTE_ID),
+      type:lufText_(r.TIPO),
+      reason:lufText_(r.MOTIVO),
+      recordedBy:lufText_(r.FUNCIONARIO)
+    };
+  });
+}
+
+function lufSaveMovement_(user, data) {
+  data=data||{};
+  const id=lufText_(data.id), studentId=lufText_(data.studentId);
+  const module=lufText_(data.module), type=lufText_(data.type);
+  const allowed=['atrasos','retiros','pases','temprano','ingreso','almuerzo'];
+  if (!id || id.length>120 || !studentId || !allowed.includes(module) || !type || type.length>120)
+    throw new Error('Movimiento incompleto o inválido');
+  if (!lufStudent_(studentId)) throw new Error('Estudiante no encontrado');
+  const lock=LockService.getScriptLock();
+  lock.waitLock(20000);
+  try {
+    const sheet=lufSheet_('MOVIMIENTOS');
+    const headers=sheet.getRange(1,1,1,LUF_MOVEMENT_HEADERS.length).getValues()[0].map(String);
+    if (headers.some((v,i)=>v!==LUF_MOVEMENT_HEADERS[i]))
+      throw new Error('Encabezados de MOVIMIENTOS incompatibles: requiere migración antes de registrar');
+    const rows=lufRows_('MOVIMIENTOS');
+    if (rows.some(r=>lufText_(r.ID)===id)) return {ok:true,id,duplicate:true};
+    const reason=lufText_(data.reason).slice(0,1000);
+    const detail={};
+    for (const k of ['operator','justified','passType','passNote','scheduled','annulled','audit','typeDetail'])
+      if (Object.prototype.hasOwnProperty.call(data,k)) detail[k]=data[k];
+    const detailJson=JSON.stringify(detail);
+    if (detailJson.length>10000) throw new Error('Detalle de movimiento demasiado extenso');
+    sheet.appendRow([id,new Date(),module,studentId,type,reason,user.email,detailJson]);
+    return {ok:true,id};
+  } finally {
+    lock.releaseLock();
+  }
+}
 /**
  * NOTA DE DESPLIEGUE: Apps Script ContentService no ofrece un control
  * CORS general para peticiones autenticadas desde GitHub Pages.
@@ -150,6 +202,8 @@ function lufCentralDispatch_(idToken, action, payload) {
   switch(action) {
     case 'session': return {ok:true,user};
     case 'students': return {ok:true,students:lufStudents_()};
+    case 'movements': return {ok:true,movements:lufMovements_(user)};
+    case 'saveMovement': return lufSaveMovement_(user,payload.movement||{});
     case 'studentPhoto': return {ok:true,...lufPhoto_(payload.studentId)};
     case 'saveStudent': return lufSaveStudent_(user,payload.student||{});
     case 'savePhoto': return lufSavePhoto_(user,payload.studentId,payload.dataUrl);
