@@ -1,0 +1,32 @@
+<!doctype html>
+<html><head><base target="_top"><meta charset="utf-8"></head>
+<body><script>
+(function () {
+  'use strict';
+  const ALLOWED_ORIGIN='https://liceo-luf.github.io';
+  const ACTIONS=new Set(['session','students','studentPhoto','saveStudent','savePhoto','movements','saveMovement']);
+  let parentWindow=null;
+  let connected=false;
+  window.addEventListener('message', function (event) {
+    if (event.origin!==ALLOWED_ORIGIN || event.source!==window.parent) return;
+    const message=event.data;
+    if (!message || message.channel!=='luf-bridge-v1') return;
+    if (message.type==='connect') {
+      parentWindow=event.source;
+      connected=true;
+      parentWindow.postMessage({channel:'luf-bridge-v1',type:'ready',nonce:message.nonce},ALLOWED_ORIGIN);
+      return;
+    }
+    if (!connected || message.type!=='call' || !ACTIONS.has(message.action)) return;
+    if (typeof message.requestId!=='string' || message.requestId.length>100) return;
+    const requestId=message.requestId;
+    const reply=(ok,value)=>parentWindow.postMessage({
+      channel:'luf-bridge-v1',type:'response',requestId,ok,
+      ...(ok?{result:value}:{error:String(value && value.message || value)})
+    },ALLOWED_ORIGIN);
+    google.script.run.withSuccessHandler(result=>reply(true,result))
+      .withFailureHandler(error=>reply(false,error))
+      .lufBridgeCall(message.idToken,message.action,message.payload||{});
+  });
+})();
+</script></body></html>
