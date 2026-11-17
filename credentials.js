@@ -14,7 +14,7 @@ $('credential-print').addEventListener('click',()=>{
  const area=document.createElement('div');area.id='credential-print-area';document.body.append(area);
  for(const student of chosen){
   const card=document.createElement('article');card.className='credential-card credential-luf';
-  const school=document.createElement('div');school.className='credential-school';school.innerHTML='<span class="credential-emblem">LUF</span><span><b>LICEO</b><b>LUIS URBINA FLORES</b><small>Rengo</small></span>';
+  const school=document.createElement('div');school.className='credential-school';school.innerHTML='<div class="credential-real-logo"></div><span><b>LICEO</b><b>LUIS URBINA FLORES</b><small>Rengo</small></span>';
   const photo=document.createElement('div');photo.className='credential-photo';if(student.photo){const img=document.createElement('img');img.src=student.photo;img.alt='';photo.append(img)}else{photo.innerHTML='<span>FOTO</span>'}
   const info=document.createElement('div');info.className='credential-info';
   const name=document.createElement('strong');name.className='credential-name';name.textContent=student.name;
