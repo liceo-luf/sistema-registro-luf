@@ -479,3 +479,8 @@ body.dashboard-detail.theme-pases .luf-search-pane:not([hidden]) #student-search
  .credential-luf .credential-qr,.credential-luf .credential-qr img,.credential-luf .credential-qr canvas{width:21.5mm!important;height:21.5mm!important}
  .credential-accent{height:4mm!important;clip-path:polygon(0 55%,32% 18%,58% 62%,100% 0,100% 100%,0 100%)!important}
 }
+/* cred7 canvas: la credencial se imprime como imagen y no depende de "gráficos de fondo" */
+@media print{
+ #credential-print-area{display:grid!important;grid-template-columns:repeat(2,86mm)!important;gap:5mm!important;justify-content:center!important;align-content:start!important}
+ #credential-print-area .credential-rendered{display:block!important;width:86mm!important;height:54mm!important;object-fit:contain!important;break-inside:avoid!important;page-break-inside:avoid!important}
+}
