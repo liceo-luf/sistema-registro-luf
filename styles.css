@@ -422,3 +422,40 @@ body.dashboard-detail.theme-pases .luf-search-pane:not([hidden]) #student-search
  .credential-luf .credential-qr,.credential-luf .credential-qr img,.credential-luf .credential-qr canvas{width:24mm!important;height:24mm!important}
  .credential-accent{height:3.3mm!important;background:linear-gradient(168deg,#ed1b2f 0 46%,#0757a5 47% 68%,#ed1b2f 69% 100%)!important}
 }
+
+/* Credencial LUF · plantilla institucional final 86 x 54 mm */
+@media print{
+ #credential-print-area .credential-card.credential-luf{
+  position:relative!important;width:86mm!important;height:54mm!important;
+  border:1mm solid #e31b2f!important;border-radius:3.2mm!important;overflow:hidden!important;
+  box-shadow:inset 0 0 0 .38mm #145da8!important;
+  background:
+   linear-gradient(90deg,rgba(255,255,255,.99) 0 47%,rgba(255,255,255,.88) 58%,rgba(230,241,251,.68) 100%),
+   linear-gradient(155deg,#fff 0 55%,#d7e7f7 55% 100%)!important;
+ }
+ .credential-card.credential-luf:before{
+  content:'';position:absolute;right:-7mm;top:0;width:43mm;height:26mm;opacity:.24;
+  background:
+   linear-gradient(165deg,transparent 0 35%,#2e79b7 36% 40%,transparent 41%),
+   linear-gradient(15deg,transparent 0 58%,#7aa9d0 59% 63%,transparent 64%);
+  z-index:0
+ }
+ .credential-card.credential-luf:after{display:none!important}
+ .credential-school{left:3.7mm!important;top:2.7mm!important;height:11mm!important;gap:1.8mm!important;z-index:4!important}
+ .credential-real-logo{width:9.5mm!important;height:11mm!important;border:.35mm solid #e31b2f!important;border-radius:.8mm!important;background:
+  radial-gradient(circle at 50% 45%,#fff 0 22%,#1b8db1 23% 27%,#fff 28% 43%,transparent 44%),
+  linear-gradient(145deg,#fff 0 55%,#d8edf4 56% 100%)!important;box-shadow:0 .3mm .7mm #173b6120!important}
+ .credential-real-logo:before{content:'LUF'!important;inset:0!important;border:0!important;background:transparent!important;color:#e31b2f!important;font:900 2.2mm Inter,Arial,sans-serif!important;place-items:end center!important;padding-bottom:.8mm!important}
+ .credential-school span{gap:.3mm}
+ .credential-school b:first-child{font-size:2.1mm!important;letter-spacing:.08em!important;color:#1b5f9e!important}
+ .credential-school b:nth-child(2){font-size:2.75mm!important;color:#174b86!important}
+ .credential-school small{font-size:1.65mm!important;color:#617c99!important}
+ .credential-photo{left:4mm!important;top:17.5mm!important;width:19.5mm!important;height:27.5mm!important;border:.65mm solid #e31b2f!important;border-radius:2.4mm!important;box-shadow:0 .5mm 1.2mm #173b6126!important}
+ .credential-info{left:26mm!important;top:19mm!important;width:31mm!important;height:25mm!important}
+ .credential-info .credential-name{font-size:3.55mm!important;line-height:1.04!important;color:#063f7c!important;letter-spacing:-.02em!important}
+ .credential-info .credential-course{margin-top:3mm!important;background:#e31b2f!important;color:#fff!important;border-radius:2mm!important;padding:1.8mm 3.6mm!important;font-size:2.7mm!important;min-width:26mm!important}
+ .credential-info .credential-id{margin-top:2mm!important;font-size:1.75mm!important;color:#174f8c!important}
+ .credential-qr-wrap{right:3.5mm!important;top:15.2mm!important;width:25mm!important;height:30mm!important;padding:.7mm!important;border:.3mm solid #d9e4ef!important;border-radius:1.8mm!important;background:#fff!important;box-shadow:0 .5mm 1.3mm #173b6120!important}
+ .credential-luf .credential-qr,.credential-luf .credential-qr img,.credential-luf .credential-qr canvas{width:23.5mm!important;height:23.5mm!important}
+ .credential-accent{height:3.2mm!important;z-index:5!important;background:linear-gradient(170deg,#e31b2f 0 44%,#fff 45% 48%,#145da8 49% 70%,#fff 71% 74%,#e31b2f 75% 100%)!important}
+}
