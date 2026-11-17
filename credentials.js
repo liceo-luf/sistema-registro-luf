@@ -12,8 +12,21 @@ $('credential-print').addEventListener('click',()=>{
  if(!chosen.length){$('admin-feedback').textContent='Selecciona al menos un estudiante activo.';return}
  if(typeof QRCode==='undefined'){$('admin-feedback').textContent='No se cargó el generador QR. Conéctate a internet y vuelve a abrir el sistema.';return}
  const area=document.createElement('div');area.id='credential-print-area';document.body.append(area);
- for(const student of chosen){const card=document.createElement('article');card.className='credential-card';const heading=document.createElement('div');heading.className='credential-heading';heading.textContent='LICEO LUIS URBINA FLORES';const subtitle=document.createElement('div');subtitle.className='credential-subtitle';subtitle.textContent='CREDENCIAL ESTUDIANTIL · DEMO';const qr=document.createElement('div');qr.className='credential-qr';const name=document.createElement('strong');name.className='credential-name';name.textContent=student.name;const course=document.createElement('div');course.className='credential-course';course.textContent=student.course;const id=document.createElement('div');id.className='credential-id';id.textContent=student.id;card.append(heading,subtitle,qr,name,course,id);area.append(card);new QRCode(qr,{text:student.id,width:156,height:156,correctLevel:QRCode.CorrectLevel.M})}
+ for(const student of chosen){
+  const card=document.createElement('article');card.className='credential-card credential-luf';
+  const school=document.createElement('div');school.className='credential-school';school.innerHTML='<span class="credential-emblem">LUF</span><span><b>LICEO</b><b>LUIS URBINA FLORES</b><small>Rengo</small></span>';
+  const photo=document.createElement('div');photo.className='credential-photo';if(student.photo){const img=document.createElement('img');img.src=student.photo;img.alt='';photo.append(img)}else{photo.innerHTML='<span>FOTO</span>'}
+  const info=document.createElement('div');info.className='credential-info';
+  const name=document.createElement('strong');name.className='credential-name';name.textContent=student.name;
+  const course=document.createElement('div');course.className='credential-course';course.textContent=student.course;
+  const id=document.createElement('div');id.className='credential-id';id.textContent=student.id;
+  info.append(name,course,id);
+  const qrWrap=document.createElement('div');qrWrap.className='credential-qr-wrap';const qr=document.createElement('div');qr.className='credential-qr';qrWrap.append(qr);
+  const accent=document.createElement('div');accent.className='credential-accent';
+  card.append(school,photo,info,qrWrap,accent);area.append(card);
+  new QRCode(qr,{text:student.id,width:220,height:220,correctLevel:QRCode.CorrectLevel.M});
+ }
  $('admin-feedback').textContent='Se prepararon '+chosen.length+' credenciales. Elige Imprimir o Guardar como PDF.';
- const images=[...area.querySelectorAll('img')];Promise.all(images.map(img=>img.complete?Promise.resolve():new Promise(resolve=>{img.onload=resolve;img.onerror=resolve}))).then(()=>{window.print();setTimeout(()=>area.remove(),1200)});
+ const images=[...area.querySelectorAll('img')];Promise.all(images.map(img=>img.complete?Promise.resolve():new Promise(resolve=>{img.onload=resolve;img.onerror=resolve}))).then(()=>{window.print();setTimeout(()=>area.remove(),1500)});
 });
 window.refreshCredentialCourses();updateCredentialCount();
