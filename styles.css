@@ -484,3 +484,10 @@ body.dashboard-detail.theme-pases .luf-search-pane:not([hidden]) #student-search
  #credential-print-area{display:grid!important;grid-template-columns:repeat(2,86mm)!important;gap:5mm!important;justify-content:center!important;align-content:start!important}
  #credential-print-area .credential-rendered{display:block!important;width:86mm!important;height:54mm!important;object-fit:contain!important;break-inside:avoid!important;page-break-inside:avoid!important}
 }
+
+/* Sesión de Configuración y visor de contraseña */
+.settings-password-wrap{position:relative;display:flex;align-items:center}
+.settings-password-wrap input{width:100%;padding-right:48px!important}
+.settings-password-toggle{position:absolute;right:6px;width:38px;height:38px;padding:0!important;border:0!important;border-radius:9px;background:transparent!important;display:grid;place-items:center;font-size:18px;cursor:pointer}
+.settings-password-toggle:hover{background:#eaf3ff!important}
+.settings-session-note{display:block;margin-top:7px;color:#68809a;font-size:12px}
